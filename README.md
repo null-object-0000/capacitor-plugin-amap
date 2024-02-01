@@ -1,13 +1,13 @@
-# capacitor-plugin-amap
+# @snewbie/capacitor-amap
 
-<a href="https://www.npmjs.com/package/capacitor-plugin-amap"><img src="https://img.shields.io/npm/v/capacitor-plugin-amap.svg?sanitize=true" alt="Version"></a> <a href="https://www.npmjs.com/package/capacitor-plugin-amap"><img src="https://img.shields.io/npm/l/capacitor-plugin-amap.svg?sanitize=true" alt="License"></a>
+<a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/v/@snewbie/capacitor-amap.svg?sanitize=true" alt="Version"></a> <a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/l/@snewbie/capacitor-amap.svg?sanitize=true" alt="License"></a>
 
 Capacitor Plugin using native AMap SDK for Android.
 
 ## Install
 
 ```bash
-npm install capacitor-plugin-amap
+npm install @snewbie/capacitor-amap
 npx cap sync
 ```
 

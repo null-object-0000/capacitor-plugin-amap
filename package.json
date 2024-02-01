@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-plugin-amap",
+  "name": "@snewbie/capacitor-amap",
   "version": "0.0.1",
   "description": "Capacitor Plugin using native AMap SDK for Android.",
   "main": "dist/plugin.cjs.js",
