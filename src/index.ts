@@ -2,9 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 
 import type { AmapPlugin } from './definitions';
 
-const Amap = registerPlugin<AmapPlugin>('Amap', {
-  web: () => import('./web').then(m => new m.AmapWeb()),
-});
+const Amap = registerPlugin<AmapPlugin>('Amap');
 
 export * from './definitions';
 export { Amap };
