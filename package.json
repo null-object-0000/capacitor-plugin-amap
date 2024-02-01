@@ -43,6 +43,11 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
+  },
   "devDependencies": {
     "@capacitor/android": "^5.0.0",
     "@capacitor/core": "^5.0.0",
@@ -51,6 +56,7 @@
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
+    "cz-git": "^1.8.0",
     "eslint": "^7.11.0",
     "prettier": "~2.3.0",
     "prettier-plugin-java": "~1.0.2",
