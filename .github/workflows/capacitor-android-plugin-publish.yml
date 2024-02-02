@@ -22,8 +22,8 @@ jobs:
                 cache: gradle
             - name: Grant execute permission for gradlew
               run: chmod +x gradlew
+            - run: npm ci
             - name: Publish to NPM
-              run: npm ci
               run: npm publish --access public
               env:
                 NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
