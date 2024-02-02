@@ -1,4 +1,4 @@
-name: Capacitor Android Plugin Publish To NPM
+name: Publish Capacitor Android Plugin To NPM
 
 on:
   release:
