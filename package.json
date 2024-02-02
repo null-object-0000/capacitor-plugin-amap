@@ -28,7 +28,7 @@
   "scripts": {
     "test": "npm run verify",
     "verify": "npm run verify:android",
-    "verify:android": "cd android && chmod +x ./gradlew && ./gradlew clean build test && cd ..",
+    "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "lint": "npm run eslint && npm run prettier -- --check",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write",
     "eslint": "eslint . --ext ts",
