@@ -100,28 +100,6 @@ export interface AMapInterface {
 
 }
 
-class MapCustomElement extends HTMLElement {
-    constructor() {
-        super();
-    }
-
-    connectedCallback() {
-        this.innerHTML = '';
-
-        if (Capacitor.getPlatform() == 'ios') {
-            this.style.overflow = 'scroll';
-            (this.style as any)['-webkit-overflow-scrolling'] = 'touch';
-
-            const overflowDiv = document.createElement('div');
-            overflowDiv.style.height = '200%';
-
-            this.appendChild(overflowDiv);
-        }
-    }
-}
-
-customElements.define('capacitor-amap', MapCustomElement);
-
 export class AMap implements AMapInterface {
     /**
      * 地图实例的唯一标识符。
@@ -308,22 +286,17 @@ export class AMap implements AMapInterface {
     }
 
     /**
-     * @deprecated Use AMap.create updatePrivacyShow.
+     * @deprecated Use AMap.updatePrivacyShow instead.
      */
-    public updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void> {
-        return CapacitorAMap.updatePrivacyShow({
-            isContains,
-            isShow
-        });
+    public updatePrivacyShow(_isContains: boolean, _isShow: boolean): Promise<void> {
+        throw new Error('Method not implemented.');
     }
 
     /**
-     * @deprecated Use AMap.create updatePrivacyAgree.
+     * @deprecated Use AMap.updatePrivacyAgree instead.
      */
-    public updatePrivacyAgree(isAgree: boolean): Promise<void> {
-        return CapacitorAMap.updatePrivacyAgree({
-            isAgree
-        });
+    public updatePrivacyAgree(_isAgree: boolean): Promise<void> {
+        throw new Error('Method not implemented.');
     }
 
     /**

@@ -108,20 +108,30 @@ public class CapacitorAMapPlugin extends Plugin {
 
     @PluginMethod
     public void updatePrivacyShow(PluginCall call) {
-        // isContains: 隐私权政策是否包含高德开平隐私权政策  true是包含
-        // isShow: 隐私权政策是否弹窗展示告知用户 true是展示
-        boolean isContains = Boolean.TRUE.equals(call.getBoolean("isContains", false));
-        boolean isShow = Boolean.TRUE.equals(call.getBoolean("isShow", false));
+        try {
+            // isContains: 隐私权政策是否包含高德开平隐私权政策  true是包含
+            // isShow: 隐私权政策是否弹窗展示告知用户 true是展示
+            boolean isContains = Boolean.TRUE.equals(call.getBoolean("isContains", false));
+            boolean isShow = Boolean.TRUE.equals(call.getBoolean("isShow", false));
 
-        MapsInitializer.updatePrivacyShow(super.getContext(), isContains, isShow);
+            MapsInitializer.updatePrivacyShow(super.getContext(), isContains, isShow);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
     }
 
     @PluginMethod
     public void updatePrivacyAgree(PluginCall call) {
-        // isAgree: 隐私权政策是否取得用户同意  true是用户同意
-        boolean isAgree = Boolean.TRUE.equals(call.getBoolean("isAgree", false));
+        try {
+            // isAgree: 隐私权政策是否取得用户同意  true是用户同意
+            boolean isAgree = Boolean.TRUE.equals(call.getBoolean("isAgree", false));
 
-        MapsInitializer.updatePrivacyAgree(super.getContext(), isAgree);
+            MapsInitializer.updatePrivacyAgree(super.getContext(), isAgree);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
     }
 
     @PluginMethod
