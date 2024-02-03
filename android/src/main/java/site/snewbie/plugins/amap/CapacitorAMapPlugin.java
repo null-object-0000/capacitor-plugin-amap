@@ -1,7 +1,7 @@
 package site.snewbie.plugins.amap;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -10,41 +10,26 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.amap.api.maps.MapsInitializer;
+import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.offlinemap.OfflineMapActivity;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.getcapacitor.annotation.Permission;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
-@CapacitorPlugin(name = "CapacitorAMap", permissions = {
-        @Permission(
-                strings = {
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.ACCESS_WIFI_STATE,
-                        Manifest.permission.CHANGE_WIFI_STATE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
-                        Manifest.permission.FOREGROUND_SERVICE,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                },
-                alias = "location")
-})
+@CapacitorPlugin(name = "CapacitorAMap")
 public class CapacitorAMapPlugin extends Plugin {
     private final Map<String, CapacitorAMap> maps = new HashMap<>();
     private final Map<String, MutableList<MotionEvent>> cachedTouchEvents = new HashMap<>();
@@ -90,9 +75,8 @@ public class CapacitorAMapPlugin extends Plugin {
                     JSObject payload = new JSObject();
                     payload.put("x", touchX / map.getConfig().getDevicePixelRatio());
                     payload.put("y", touchY / map.getConfig().getDevicePixelRatio());
-                    payload.put("mapId", map.getId());
 
-                    notifyListeners("isMapInFocus", payload);
+                    this.notifyListeners(map.getId(), "isMapInFocus", payload);
                     return true;
                 }
             }
@@ -120,6 +104,24 @@ public class CapacitorAMapPlugin extends Plugin {
     protected void handleOnPause() {
         super.handleOnPause();
         maps.values().forEach(map -> map.getMapView().onPause());
+    }
+
+    @PluginMethod
+    public void updatePrivacyShow(PluginCall call) {
+        // isContains: 隐私权政策是否包含高德开平隐私权政策  true是包含
+        // isShow: 隐私权政策是否弹窗展示告知用户 true是展示
+        boolean isContains = Boolean.TRUE.equals(call.getBoolean("isContains", false));
+        boolean isShow = Boolean.TRUE.equals(call.getBoolean("isShow", false));
+
+        MapsInitializer.updatePrivacyShow(super.getContext(), isContains, isShow);
+    }
+
+    @PluginMethod
+    public void updatePrivacyAgree(PluginCall call) {
+        // isAgree: 隐私权政策是否取得用户同意  true是用户同意
+        boolean isAgree = Boolean.TRUE.equals(call.getBoolean("isAgree", false));
+
+        MapsInitializer.updatePrivacyAgree(super.getContext(), isAgree);
     }
 
     @PluginMethod
@@ -244,21 +246,6 @@ public class CapacitorAMapPlugin extends Plugin {
         }
     }
 
-    @NonNull
-    private CapacitorAMap getMap(PluginCall call) {
-        String id = call.getString("id");
-        if (null == id || id.isEmpty()) {
-            throw new IllegalArgumentException("id is required");
-        }
-
-        CapacitorAMap map = maps.get(id);
-        if (map == null) {
-            throw new IllegalArgumentException("map not found");
-        }
-
-        return map;
-    }
-
     private void setTouchEnabled(PluginCall call, boolean enabled) {
         try {
             String id = call.getString("id");
@@ -303,25 +290,85 @@ public class CapacitorAMapPlugin extends Plugin {
         return new RectF(x.floatValue(), y.floatValue(), (float) (x + width), (float) (y + height));
     }
 
-    private static class MutableList<E> extends ArrayList<E> {
-        public MutableList() {
-            super();
-        }
+    @PluginMethod
+    public void openOfflineMapActivity() {
+        this.bridge.getActivity().startActivity(new Intent(this.bridge.getActivity(), OfflineMapActivity.class));
+    }
 
-        public E first() {
-            if (super.isEmpty()) {
-                throw new NoSuchElementException("List is empty.");
-            } else {
-                return super.get(0);
-            }
-        }
-
-        public E removeFirst() {
-            if (super.isEmpty()) {
-                throw new NoSuchElementException("List is empty.");
-            } else {
-                return super.remove(0);
-            }
+    @PluginMethod
+    public void enableMyLocation(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            map.getMapView().getMap().setMyLocationEnabled(true);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
         }
     }
+
+    @PluginMethod
+    public void disableMyLocation(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            map.getMapView().getMap().setMyLocationEnabled(false);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void setMyLocationStyle(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+
+            JSObject style = call.getObject("style");
+            if (null == style) {
+                throw new IllegalArgumentException("style object is missing");
+            }
+
+            MyLocationStyle myLocationStyle = new MyLocationStyle();
+            if (style.has("interval")) {
+                myLocationStyle.interval(style.getInt("interval"));
+            }
+            if (style.has("myLocationType")) {
+                myLocationStyle.myLocationType(style.getInt("myLocationType"));
+            }
+            if (style.has("showMyLocation")) {
+                myLocationStyle.showMyLocation(style.getBoolean("showMyLocation"));
+            }
+
+            map.getMapView().getMap().setMyLocationStyle(myLocationStyle);
+
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @NonNull
+    private CapacitorAMap getMap(PluginCall call) {
+        String id = call.getString("id");
+        if (null == id || id.isEmpty()) {
+            throw new IllegalArgumentException("id is required");
+        }
+
+        CapacitorAMap map = maps.get(id);
+        if (map == null) {
+            throw new IllegalArgumentException("map not found");
+        }
+
+        return map;
+    }
+
+    public void notifyListeners(String mapId, String event, JSObject data) {
+        if (data == null) {
+            data = new JSObject();
+        }
+
+        data.put("mapId", mapId);
+
+        super.notifyListeners(event, data);
+    }
+
 }
