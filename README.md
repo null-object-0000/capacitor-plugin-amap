@@ -53,22 +53,16 @@ Android 版高德地图 SDK 要求您将 API 密钥添加到项目中的 Android
 
 ## Usage
 
-高德地图 Capacitor 插件附带了一个 web 组件，该组件必须用于在您的应用程序中渲染地图，因为它使我们能够在 iOS 上更有效地嵌入原生视图。插件将自动注册此 web 组件，以便在您的应用程序中使用。
-
-将此组件包含在HTML中，并为其分配一个ID，以便以后可以方便地查询该元素引用。
-
-```html
-<capacitor-amap id="amap"></capacitor-amap>
-```
-
 > 在 Android 上，地图在整个网络视图下呈现，并使用该组件在滚动事件期间管理其位置。这意味着，作为开发人员，您必须确保 Web 视图在所有层到最底层都是透明的。在典型的 Ionic 应用程序中，这意味着对 IonContent 和根 HTML 标记等元素设置透明度，以确保它可以被看到。如果你在 Android 上看不到你的地图，这应该是你检查的第一件事。
-> 
-> 在 iOS 上，我们将地图直接渲染到网络视图中，因此不需要相同的透明度效果。我们仍在研究 Android 的替代方法，并希望在未来的更新中更好地解决这个问题。
 
 高德地图元素本身没有样式，所以你应该根据页面结构的布局对其进行样式设置。因为我们将视图渲染到这个槽中，所以元素本身没有宽度或高度，所以一定要明确设置这些宽度或高度。
 
+```html
+<div id="map" class="capacitor-map"></div>
+```
+
 ```css
-capacitor-amap {
+.capacitor-map {
   display: inline-block;
   width: 275px;
   height: 400px;
@@ -80,14 +74,11 @@ capacitor-amap {
 ```typescript
 import { AMap } from '@snewbie/capacitor-amap';
 
-const apiKey = 'YOUR_API_KEY_HERE';
-
 const mapRef = document.getElementById('map');
 
 const newMap = await AMap.create({
   id: 'my-map', // Unique identifier for this map instance
   element: mapRef, // reference to the capacitor-google-map element
-  apiKey: apiKey, // Your Google Maps API Key
   config: {
     center: {
       // The initial position to be rendered by the map
@@ -105,7 +96,7 @@ const newMap = await AMap.create({
 
 ```html
 <template>
-    <capacitor-amap id="map" ref="mapRef" :style="{ display: 'inline-block', width: '275px', height: '400px' }"></capacitor-amap>
+    <div id="map" ref="mapRef" :style="{ display: 'inline-block', width: '275px', height: '400px' }"></div>
 </template>
 
 <script setup lang="ts">
