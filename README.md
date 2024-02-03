@@ -23,7 +23,7 @@ Android 版高德地图 SDK 要求您将 API 密钥添加到项目中的 Android
 <meta-data android:name="com.amap.api.v2.apikey" android:value="请输入您的用户 Key"/>
 ```
 
-要使用某些功能，SDK 还需要以下权限才能添加到 AndroidManifest.xml：
+要使用某些功能，还需要将以下权限添加到项目中的 AndroidManifest.xml 文件中：
 
 ```xml
 <!--允许访问网络，必选权限-->
@@ -61,9 +61,9 @@ Android 版高德地图 SDK 要求您将 API 密钥添加到项目中的 Android
 <capacitor-amap id="amap"></capacitor-amap>
 ```
 
-    在 Android 上，地图在整个网络视图下呈现，并使用该组件在滚动事件期间管理其位置。这意味着，作为开发人员，您必须确保 Web 视图在所有层到最底层都是透明的。在典型的 Ionic 应用程序中，这意味着对 IonContent 和根 HTML 标记等元素设置透明度，以确保它可以被看到。如果你在 Android 上看不到你的地图，这应该是你检查的第一件事。
-
-    在 iOS 上，我们将地图直接渲染到网络视图中，因此不需要相同的透明度效果。我们仍在研究 Android 的替代方法，并希望在未来的更新中更好地解决这个问题。
+> 在 Android 上，地图在整个网络视图下呈现，并使用该组件在滚动事件期间管理其位置。这意味着，作为开发人员，您必须确保 Web 视图在所有层到最底层都是透明的。在典型的 Ionic 应用程序中，这意味着对 IonContent 和根 HTML 标记等元素设置透明度，以确保它可以被看到。如果你在 Android 上看不到你的地图，这应该是你检查的第一件事。
+> 
+> 在 iOS 上，我们将地图直接渲染到网络视图中，因此不需要相同的透明度效果。我们仍在研究 Android 的替代方法，并希望在未来的更新中更好地解决这个问题。
 
 高德地图元素本身没有样式，所以你应该根据页面结构的布局对其进行样式设置。因为我们将视图渲染到这个槽中，所以元素本身没有宽度或高度，所以一定要明确设置这些宽度或高度。
 
@@ -113,7 +113,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { AMap } from '@snewbie/capacitor-amap';
 
 const mapRef = ref<HTMLElement | null>(null)
-const newMap: Amap;
+let newMap: Amap;
 
 onMounted(async () => {
     if (!mapRef.value) { return; }
@@ -144,27 +144,39 @@ onUnmounted(() => {
 
 <docgen-index>
 
-* [`updatePrivacyShow(...)`](#updateprivacyshow)
-* [`updatePrivacyAgree(...)`](#updateprivacyagree)
-* [`create(...)`](#create)
-* [`destroy()`](#destroy)
-* [`enableTouch()`](#enabletouch)
-* [`disableTouch()`](#disabletouch)
-* [`setOnCameraChangeListener(...)`](#setoncamerachangelistener)
-* [`setOnIndoorBuildingActiveListener(...)`](#setonindoorbuildingactivelistener)
-* [`setOnInfoWindowClickListener(...)`](#setoninfowindowclicklistener)
-* [`setOnMapClickListener(...)`](#setonmapclicklistener)
-* [`setOnMapLoadedListener(...)`](#setonmaploadedlistener)
-* [`setOnMapLongClickListener(...)`](#setonmaplongclicklistener)
-* [`setOnMapTouchListener(...)`](#setonmaptouchlistener)
-* [`setOnMarkerClickListener(...)`](#setonmarkerclicklistener)
-* [`setOnMarkerDragListener(...)`](#setonmarkerdraglistener)
-* [`setOnMultiPointClickListener(...)`](#setonmultipointclicklistener)
-* [`setOnMyLocationChangeListener(...)`](#setonmylocationchangelistener)
-* [`setOnPOIClickListener(...)`](#setonpoiclicklistener)
-* [`setOnPolylineClickListener(...)`](#setonpolylineclicklistener)
-* [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
+- [@snewbie/capacitor-amap](#snewbiecapacitor-amap)
+  - [Install](#install)
+  - [API Keys](#api-keys)
+  - [Android（详细配置说明请参考 高德地图 SDK 文档）](#android详细配置说明请参考-高德地图-sdk-文档)
+  - [Usage](#usage)
+  - [Full Examples](#full-examples)
+    - [Vue](#vue)
+  - [API](#api)
+    - [updatePrivacyShow(...)](#updateprivacyshow)
+    - [updatePrivacyAgree(...)](#updateprivacyagree)
+    - [create(...)](#create)
+    - [destroy()](#destroy)
+    - [enableTouch()](#enabletouch)
+    - [disableTouch()](#disabletouch)
+    - [setOnCameraChangeListener(...)](#setoncamerachangelistener)
+    - [setOnIndoorBuildingActiveListener(...)](#setonindoorbuildingactivelistener)
+    - [setOnInfoWindowClickListener(...)](#setoninfowindowclicklistener)
+    - [setOnMapClickListener(...)](#setonmapclicklistener)
+    - [setOnMapLoadedListener(...)](#setonmaploadedlistener)
+    - [setOnMapLongClickListener(...)](#setonmaplongclicklistener)
+    - [setOnMapTouchListener(...)](#setonmaptouchlistener)
+    - [setOnMarkerClickListener(...)](#setonmarkerclicklistener)
+    - [setOnMarkerDragListener(...)](#setonmarkerdraglistener)
+    - [setOnMultiPointClickListener(...)](#setonmultipointclicklistener)
+    - [setOnMyLocationChangeListener(...)](#setonmylocationchangelistener)
+    - [setOnPOIClickListener(...)](#setonpoiclicklistener)
+    - [setOnPolylineClickListener(...)](#setonpolylineclicklistener)
+    - [Interfaces](#interfaces)
+      - [CreateMapArgs](#createmapargs)
+      - [AMapConfig](#amapconfig)
+      - [MapReadyCallbackData](#mapreadycallbackdata)
+    - [Type Aliases](#type-aliases)
+      - [MapListenerCallback](#maplistenercallback)
 
 </docgen-index>
 
@@ -181,10 +193,10 @@ updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 
 更新隐私合规状态，需要在初始化地图之前完成
 
-| Param            | Type                 | Description                |
-| ---------------- | -------------------- | -------------------------- |
+| Param            | Type                 | Description                                     |
+| ---------------- | -------------------- | ----------------------------------------------- |
 | **`isContains`** | <code>boolean</code> | 隐私权政策是否包含高德开平隐私权政策 true是包含 |
-| **`isShow`**     | <code>boolean</code> | 隐私权政策是否弹窗展示告知用户 true是展示    |
+| **`isShow`**     | <code>boolean</code> | 隐私权政策是否弹窗展示告知用户 true是展示       |
 
 --------------------
 
@@ -197,8 +209,8 @@ updatePrivacyAgree(isAgree: boolean) => Promise<void>
 
 更新同意隐私状态，需要在初始化地图之前完成
 
-| Param         | Type                 | Description             |
-| ------------- | -------------------- | ----------------------- |
+| Param         | Type                 | Description                               |
+| ------------- | -------------------- | ----------------------------------------- |
 | **`isAgree`** | <code>boolean</code> | 隐私权政策是否取得用户同意 true是用户同意 |
 
 --------------------
@@ -212,10 +224,10 @@ create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackDa
 
 创建地图实例。
 
-| Param          | Type                                                                                                                                | Description |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **`options`**  | <code><a href="#createmapargs">CreateMapArgs</a></code>                                                                             | - 创建地图的参数。  |
-| **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;<a href="#mapreadycallbackdata">MapReadyCallbackData</a>&gt;</code> |             |
+| Param          | Type                                                                                                                                | Description        |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| **`options`**  | <code><a href="#createmapargs">CreateMapArgs</a></code>                                                                             | - 创建地图的参数。 |
+| **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;<a href="#mapreadycallbackdata">MapReadyCallbackData</a>&gt;</code> |                    |
 
 **Returns:** <code>Promise&lt;AMap&gt;</code>
 
@@ -457,21 +469,21 @@ setOnPolylineClickListener(callback?: MapListenerCallback<any> | undefined) => P
 
 | Prop              | Type                                              | Description                                                                                        | Default            |
 | ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------ |
-| **`id`**          | <code>string</code>                               | 地图实例的唯一标识符。                                                                                        |                    |
-| **`config`**      | <code><a href="#amapconfig">AMapConfig</a></code> | 地图的初始配置设置。                                                                                         |                    |
+| **`id`**          | <code>string</code>                               | 地图实例的唯一标识符。                                                                             |                    |
+| **`config`**      | <code><a href="#amapconfig">AMapConfig</a></code> | 地图的初始配置设置。                                                                               |                    |
 | **`element`**     | <code>HTMLElement</code>                          | The DOM element that the Google Map View will be mounted on which determines size and positioning. |                    |
-| **`forceCreate`** | <code>boolean</code>                              | 如果已经存在具有提供的`id`的地图，则销毁并重新创建地图实例。                                                                   | <code>false</code> |
+| **`forceCreate`** | <code>boolean</code>                              | 如果已经存在具有提供的`id`的地图，则销毁并重新创建地图实例。                                       | <code>false</code> |
 
 
 #### AMapConfig
 
-| Prop                   | Type                 | Description                                                                                         | Default           |
-| ---------------------- | -------------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
-| **`width`**            | <code>number</code>  | Override width for native map.                                                                      |                   |
-| **`height`**           | <code>number</code>  | Override height for native map.                                                                     |                   |
-| **`x`**                | <code>number</code>  | Override absolute x coordinate position for native map.                                             |                   |
-| **`y`**                | <code>number</code>  | Override absolute y coordinate position for native map.                                             |                   |
-| **`devicePixelRatio`** | <code>number</code>  | Override pixel ratio for native map.                                                                |                   |
+| Prop                   | Type                 | Description                                                                                                                                                                  | Default           |
+| ---------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| **`width`**            | <code>number</code>  | Override width for native map.                                                                                                                                               |                   |
+| **`height`**           | <code>number</code>  | Override height for native map.                                                                                                                                              |                   |
+| **`x`**                | <code>number</code>  | Override absolute x coordinate position for native map.                                                                                                                      |                   |
+| **`y`**                | <code>number</code>  | Override absolute y coordinate position for native map.                                                                                                                      |                   |
+| **`devicePixelRatio`** | <code>number</code>  | Override pixel ratio for native map.                                                                                                                                         |                   |
 | **`touchPoiEnable`**   | <code>boolean</code> | 设置地图`POI`是否允许点击。 默认情况下单击地铁站，地铁路线会高亮，如果关闭了poi单击，则地铁站不会被单击，地铁路线也不会高亮 - true 表示允许点击，为默认值 - false 不允许点击 | <code>true</code> |
 
 
