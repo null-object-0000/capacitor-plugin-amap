@@ -12,12 +12,14 @@ import { CapacitorAMap } from './implementation';
 export interface AMapInterface {
     /**
      * 更新隐私合规状态，需要在初始化地图之前完成
+     * @function AMap.updatePrivacyShow
      * @param isContains 隐私权政策是否包含高德开平隐私权政策  true是包含 
      * @param isShow 隐私权政策是否弹窗展示告知用户 true是展示 
      */
     updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void>;
     /**
      * 更新同意隐私状态，需要在初始化地图之前完成
+     * @function AMap.updatePrivacyAgree
      * @param isAgree 隐私权政策是否取得用户同意  true是用户同意
      */
     updatePrivacyAgree(isAgree: boolean): Promise<void>;
@@ -147,6 +149,18 @@ export class AMap implements AMapInterface {
 
     private constructor(id: string) {
         this.id = id;
+    }
+
+    public static updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void> {
+        return CapacitorAMap.updatePrivacyShow({
+            isContains,
+            isShow
+        });
+    }
+    public static updatePrivacyAgree(isAgree: boolean): Promise<void> {
+        return CapacitorAMap.updatePrivacyAgree({
+            isAgree
+        });
     }
 
     public static async create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap> {
@@ -293,12 +307,19 @@ export class AMap implements AMapInterface {
         });
     }
 
+    /**
+     * @deprecated Use AMap.create updatePrivacyShow.
+     */
     public updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void> {
         return CapacitorAMap.updatePrivacyShow({
             isContains,
             isShow
         });
     }
+
+    /**
+     * @deprecated Use AMap.create updatePrivacyAgree.
+     */
     public updatePrivacyAgree(isAgree: boolean): Promise<void> {
         return CapacitorAMap.updatePrivacyAgree({
             isAgree

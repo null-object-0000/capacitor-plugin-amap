@@ -113,7 +113,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { AMap } from '@snewbie/capacitor-amap';
 
 const mapRef = ref<HTMLElement | null>(null)
-const newMap: Amap;
+let newMap: Amap;
 
 onMounted(async () => {
     if (!mapRef.value) { return; }
