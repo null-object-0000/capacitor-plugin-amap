@@ -1,8 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import { MapListenerCallback, MapReadyCallbackData } from './definitions';
-import type { CreateMapArgs } from './implementation';
+import { MapListenerCallback, MapReadyCallbackData, MapType, UiSettings } from './definitions';
+import type { CreateMapArgs, MyLocationStyle } from './implementation';
 import { CapacitorAMap } from './implementation';
 
 /**
@@ -15,14 +15,24 @@ export interface AMapInterface {
      * @function AMap.updatePrivacyShow
      * @param isContains 隐私权政策是否包含高德开平隐私权政策  true是包含 
      * @param isShow 隐私权政策是否弹窗展示告知用户 true是展示 
+     * @since 0.0.2
      */
     updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void>;
     /**
      * 更新同意隐私状态，需要在初始化地图之前完成
      * @function AMap.updatePrivacyAgree
      * @param isAgree 隐私权政策是否取得用户同意  true是用户同意
+     * @since 0.0.2
      */
     updatePrivacyAgree(isAgree: boolean): Promise<void>;
+    /**
+     * 是否打开地形图, 打开地形图之后，底图会变成3D模式，添加的点线面等覆盖物也会自动带有高程。注意：需要在MapView创建之前调用。
+     * @function AMap.setTerrainEnable
+     * @param isTerrainEnable true为打开，默认false
+     * @default false
+     * @since 0.0.5
+     */
+    setTerrainEnable(isTerrainEnable: boolean): Promise<void>;
 
     /**
      * 创建地图实例。
@@ -30,74 +40,131 @@ export interface AMapInterface {
      * @param {CreateMapArgs} options - 创建地图的参数。
      * @param callback
      * @returns AMap
+     * @since 0.0.1
      */
     create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap>;
+
+    /**
+     * 设置是否显示室内地图，默认不显示。注：如果打开了室内地图，会显示3D建筑物，即如果之前有设置不显示3D建筑物，3D建筑物也会被显示出来。
+     * @param enable true：显示室内地图；false：不显示
+     * @since 0.0.5
+     */
+    showIndoorMap(enable: boolean): Promise<void>;
+    /**
+     * 设置地图模式。
+     * @since 0.0.5
+     */
+    setMapType(type: MapType): Promise<void>;
+    /**
+     * 设置是否打开交通路况图层。
+     * @param enable 是否打开交通路况图层。
+     * @since 0.0.5
+     */
+    setTrafficEnabled(enable: boolean): Promise<void>;
+
     /**
      * 销毁地图实例。
+     * @since 0.0.1
      */
     destroy(): Promise<void>;
     /**
      * 设置地图允许被触控。
+     * @since 0.0.1
      */
     enableTouch(): Promise<void>;
     /**
      * 设置地图禁止被触控。
+     * @since 0.0.1
      */
     disableTouch(): Promise<void>;
 
     /**
+     * 设置启动显示定位蓝点。
+     * @since 0.0.5
+     */
+    enableMyLocation(): Promise<void>;
+    /**
+     * 设置隐藏定位蓝点并不进行定位。
+     * @since 0.0.5
+     */
+    disableMyLocation(): Promise<void>;
+    /**
+     * 设置定位蓝点的Style。
+     * @since 0.0.5
+     */
+    setMyLocationStyle(style: MyLocationStyle): Promise<void>;
+
+    /**
+     * 设置地图内置UI及手势控制器。
+     * @since 0.0.5
+     */
+    setUiSettings(args: UiSettings): Promise<void>;
+
+    /**
      * 设置地图状态的监听接口。
+     * @since 0.0.2
      */
     setOnCameraChangeListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置室内地图状态监听接口。
+     * @since 0.0.2
      */
     setOnIndoorBuildingActiveListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置marker的信息窗口点击事件监听接口。
+     * @since 0.0.2
      */
     setOnInfoWindowClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置地图点击事件监听接口。
+     * @since 0.0.2
      */
     setOnMapClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
-     * 设置地图加载完成监听接口
+     * 设置地图加载完成监听接口。
+     * @since 0.0.2
      */
     setOnMapLoadedListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置地图长按事件监听接口。
+     * @since 0.0.2
      */
     setOnMapLongClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置地图触摸事件监听接口。
+     * @since 0.0.2
      */
     setOnMapTouchListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置marker点击事件监听接口。
+     * @since 0.0.2
      */
     setOnMarkerClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
-     * marker拖动事件监听接口
+     * marker拖动事件监听接口。
+     * @since 0.0.2
      */
     setOnMarkerDragListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
-     * 设置海量点单击事件监听
+     * 设置海量点单击事件监听。
+     * @since 0..2
      */
     setOnMultiPointClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置用户定位信息监听接口。
+     * @since 0.0.2
      */
     setOnMyLocationChangeListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置底图poi点击事件监听接口。
+     * @since 0.0.2
      */
     setOnPOIClickListener(callback?: MapListenerCallback<any>): Promise<void>;
     /**
      * 设置polyline点击事件监听接口。
+     * @since 0.0.2
      */
     setOnPolylineClickListener(callback?: MapListenerCallback<any>): Promise<void>;
-
 }
 
 export class AMap implements AMapInterface {
@@ -135,9 +202,16 @@ export class AMap implements AMapInterface {
             isShow
         });
     }
+
     public static updatePrivacyAgree(isAgree: boolean): Promise<void> {
         return CapacitorAMap.updatePrivacyAgree({
             isAgree
+        });
+    }
+
+    public static setTerrainEnable(isTerrainEnable: boolean): Promise<void> {
+        return CapacitorAMap.setTerrainEnable({
+            isTerrainEnable
         });
     }
 
@@ -262,6 +336,18 @@ export class AMap implements AMapInterface {
         return newMap;
     }
 
+    public showIndoorMap(enable: boolean): Promise<void> {
+        return CapacitorAMap.showIndoorMap({ id: this.id, enable });
+    }
+
+    public setMapType(type: MapType): Promise<void> {
+        return CapacitorAMap.setMapType({ id: this.id, type });
+    }
+
+    public setTrafficEnabled(enable: boolean): Promise<void> {
+        return CapacitorAMap.setTrafficEnabled({ id: this.id, enable });
+    }
+
     private static async getElementBounds(element: HTMLElement): Promise<DOMRect> {
         return new Promise(resolve => {
             let elementBounds = element.getBoundingClientRect();
@@ -300,6 +386,13 @@ export class AMap implements AMapInterface {
     }
 
     /**
+     * @deprecated Use AMap.setTerrainEnable instead.
+     */
+    public setTerrainEnable(_isTerrainEnable: boolean): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
      * @deprecated Use AMap.create instead.
      */
     public create(_options: CreateMapArgs, _callback?: MapListenerCallback<MapReadyCallbackData> | undefined): Promise<AMap> {
@@ -328,6 +421,25 @@ export class AMap implements AMapInterface {
 
     public disableTouch(): Promise<void> {
         return CapacitorAMap.disableTouch({ id: this.id });
+    }
+
+    public enableMyLocation(): Promise<void> {
+        return CapacitorAMap.enableMyLocation({ id: this.id });
+    }
+
+    public disableMyLocation(): Promise<void> {
+        return CapacitorAMap.disableMyLocation({ id: this.id });
+    }
+
+    public setMyLocationStyle(style: MyLocationStyle): Promise<void> {
+        return CapacitorAMap.setMyLocationStyle({
+            id: this.id,
+            style,
+        });
+    }
+
+    public setUiSettings(args: UiSettings): Promise<void> {
+        return CapacitorAMap.setUiSettings({ id: this.id, ...args });
     }
 
     private initScrolling(): void {

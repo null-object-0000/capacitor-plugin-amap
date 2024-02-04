@@ -1,5 +1,8 @@
 package site.snewbie.plugins.amap;
 
+import static com.amap.api.maps.AMap.MAP_TYPE_NAVI_NIGHT;
+import static com.amap.api.maps.AMap.MAP_TYPE_NORMAL;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -11,13 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.amap.api.maps.MapsInitializer;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.offlinemap.OfflineMapActivity;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +36,12 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
-@CapacitorPlugin(name = "CapacitorAMap")
+@CapacitorPlugin(name = "CapacitorAMap", permissions = {
+        @Permission(strings = {
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+        }, alias = "location")
+})
 public class CapacitorAMapPlugin extends Plugin {
     private final Map<String, CapacitorAMap> maps = new HashMap<>();
     private final Map<String, MutableList<MotionEvent>> cachedTouchEvents = new HashMap<>();
@@ -135,6 +147,18 @@ public class CapacitorAMapPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void setTerrainEnable(PluginCall call) {
+        try {
+            boolean isTerrainEnable = Boolean.TRUE.equals(call.getBoolean("isTerrainEnable", false));
+
+            MapsInitializer.setTerrainEnable(isTerrainEnable);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
     public void create(PluginCall call) {
         try {
             String id = call.getString("id");
@@ -163,6 +187,50 @@ public class CapacitorAMapPlugin extends Plugin {
 
             CapacitorAMap map = new CapacitorAMap(id, new AMapConfig(config), this, call);
             maps.put(id, map);
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void showIndoorMap(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            boolean enable = Boolean.TRUE.equals(call.getBoolean("enable", false));
+            map.getMapView().getMap().showIndoorMap(enable);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void setMapType(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            if (!call.hasOption("type")) {
+                throw new IllegalArgumentException("type is required");
+            }
+
+            Integer type = call.getInt("type", null);
+            if (type == null || type < MAP_TYPE_NORMAL || type > MAP_TYPE_NAVI_NIGHT) {
+                throw new IllegalArgumentException("type is invalid");
+            }
+
+            map.getMapView().getMap().setMapType(type);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void setTrafficEnabled(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            boolean enable = Boolean.TRUE.equals(call.getBoolean("enable", false));
+            map.getMapView().getMap().setTrafficEnabled(enable);
+            call.resolve();
         } catch (Exception e) {
             call.reject(e.getMessage(), e);
         }
@@ -309,10 +377,26 @@ public class CapacitorAMapPlugin extends Plugin {
     public void enableMyLocation(PluginCall call) {
         try {
             CapacitorAMap map = this.getMap(call);
+
+            if (super.getPermissionState("location") != PermissionState.GRANTED) {
+                super.requestPermissionForAlias("location", call, "locationPermsCallback");
+                return;
+            }
+
             map.getMapView().getMap().setMyLocationEnabled(true);
+
             call.resolve();
         } catch (Exception e) {
             call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PermissionCallback
+    private void locationPermsCallback(PluginCall call) {
+        if (super.getPermissionState("location") == PermissionState.GRANTED) {
+            this.enableMyLocation(call);
+        } else {
+            call.reject("Permission is required to enable location");
         }
     }
 
@@ -349,6 +433,22 @@ public class CapacitorAMapPlugin extends Plugin {
             }
 
             map.getMapView().getMap().setMyLocationStyle(myLocationStyle);
+
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void setUiSettings(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+
+            UiSettings uiSettings = map.getMapView().getMap().getUiSettings();
+            if (call.hasOption("myLocationButtonEnabled")) {
+                uiSettings.setMyLocationButtonEnabled(Boolean.TRUE.equals(call.getBoolean("myLocationButtonEnabled", false)));
+            }
 
             call.resolve();
         } catch (Exception e) {

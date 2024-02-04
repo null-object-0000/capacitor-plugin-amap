@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
 
+import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.MapView;
@@ -63,13 +64,15 @@ public class CapacitorAMap {
         this.delegate = delegate;
 
         AMapOptions mapOptions = new AMapOptions()
-                .scaleControlsEnabled(false)
-                .compassEnabled(false)
-                .rotateGesturesEnabled(false)
-                .scrollGesturesEnabled(false)
-                .tiltGesturesEnabled(false)
-                .zoomControlsEnabled(false)
-                .zoomGesturesEnabled(false);
+                .logoPosition(config.getLogoPosition())
+                .mapType(config.getMapType())
+                .scaleControlsEnabled(config.isScaleControlsEnabled())
+                .compassEnabled(config.isCompassEnabled())
+                .rotateGesturesEnabled(config.isRotateGesturesEnabled())
+                .scrollGesturesEnabled(config.isScrollGesturesEnabled())
+                .tiltGesturesEnabled(config.isTiltGesturesEnabled())
+                .zoomControlsEnabled(config.isZoomControlsEnabled())
+                .zoomGesturesEnabled(config.isZoomGesturesEnabled());
 
         this.mapView = new MapView(delegate.getContext(), mapOptions);
         this.mapView.onCreate(null);
@@ -235,12 +238,9 @@ public class CapacitorAMap {
     public void notifyListeners(String eventName, Object data) {
         Class<?> clazz = data.getClass();
         if (JSObject.class.equals(clazz)) {
-            JSObject payload = (JSObject) data;
-            this.delegate.notifyListeners(this.id, eventName, payload);
+            this.delegate.notifyListeners(this.id, eventName, (JSObject) data);
         } else if (LatLng.class.equals(clazz)) {
-            LatLng latLng = (LatLng) data;
-            JSObject payload = this.latLng2JSObject(latLng);
-            this.delegate.notifyListeners(this.id, eventName, payload);
+            this.delegate.notifyListeners(this.id, eventName, this.latLng2JSObject((LatLng) data));
         } else if (CameraPosition.class.equals(clazz)) {
             CameraPosition position = (CameraPosition) data;
             JSObject payload = new JSObject();
@@ -279,16 +279,9 @@ public class CapacitorAMap {
             payload.put("floorNames", indoorBuildingInfo.floor_names);
             this.delegate.notifyListeners(this.id, eventName, payload);
         } else if (Location.class.equals(clazz)) {
-            Location location = (Location) data;
-            JSObject payload = new JSObject();
-            payload.put("latitude", location.getLatitude());
-            payload.put("longitude", location.getLongitude());
-            payload.put("accuracy", location.getAccuracy());
-            payload.put("altitude", location.getAltitude());
-            payload.put("bearing", location.getBearing());
-            payload.put("speed", location.getSpeed());
-            payload.put("time", location.getTime());
-            this.delegate.notifyListeners(this.id, eventName, payload);
+            this.delegate.notifyListeners(this.id, eventName, this.location2JSObject((Location) data));
+        } else if (AMapLocation.class.equals(clazz)) {
+            this.delegate.notifyListeners(this.id, eventName, this.location2JSObject((AMapLocation) data));
         } else if (MultiPointItem.class.equals(clazz)) {
             MultiPointItem pointItem = (MultiPointItem) data;
             JSObject payload = new JSObject();
@@ -317,17 +310,43 @@ public class CapacitorAMap {
     }
 
     private JSObject latLng2JSObject(LatLng latLng) {
-        JSObject position = new JSObject();
-        position.put("latitude", latLng.latitude);
-        position.put("longitude", latLng.longitude);
-        return position;
+        JSObject payload = new JSObject();
+        payload.put("latitude", latLng.latitude);
+        payload.put("longitude", latLng.longitude);
+        return payload;
     }
 
     private JSObject point2JSObject(Point point) {
-        JSObject position = new JSObject();
-        position.put("x", point.x / this.config.getDevicePixelRatio());
-        position.put("y", point.y / this.config.getDevicePixelRatio());
-        return position;
+        JSObject payload = new JSObject();
+        payload.put("x", point.x / this.config.getDevicePixelRatio());
+        payload.put("y", point.y / this.config.getDevicePixelRatio());
+        return payload;
+    }
+
+    private JSObject location2JSObject(Location location) {
+        JSObject payload = new JSObject();
+        payload.put("latitude", location.getLatitude());
+        payload.put("longitude", location.getLongitude());
+        payload.put("accuracy", location.getAccuracy());
+        payload.put("altitude", location.getAltitude());
+        payload.put("bearing", location.getBearing());
+        payload.put("speed", location.getSpeed());
+        payload.put("time", location.getTime());
+        return payload;
+    }
+
+    private JSObject location2JSObject(AMapLocation location) {
+        if (location.getErrorCode() != 0) {
+            JSObject payload = new JSObject();
+            payload.put("errorCode", location.getErrorCode());
+            payload.put("errorInfo", location.getErrorInfo());
+            return payload;
+        }
+
+        JSObject payload = this.location2JSObject((Location) location);
+        payload.put("errorCode", location.getErrorCode());
+        payload.put("errorInfo", location.getErrorInfo());
+        return payload;
     }
 
 }

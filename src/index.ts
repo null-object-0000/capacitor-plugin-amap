@@ -1,9 +1,13 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 export {
-
+    AMapConfig,
+    LogoPosition,
+    MapType,
 } from './definitions';
-import { AMap } from './map';
+
+export {
+    MyLocationType
+} from './implementation';
 
 export {
     AMap
-};
+} from './map';
