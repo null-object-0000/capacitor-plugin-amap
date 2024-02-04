@@ -137,10 +137,18 @@ onUnmounted(() => {
 
 * [`updatePrivacyShow(...)`](#updateprivacyshow)
 * [`updatePrivacyAgree(...)`](#updateprivacyagree)
+* [`setTerrainEnable(...)`](#setterrainenable)
 * [`create(...)`](#create)
+* [`showIndoorMap(...)`](#showindoormap)
+* [`setMapType(...)`](#setmaptype)
+* [`setTrafficEnabled(...)`](#settrafficenabled)
 * [`destroy()`](#destroy)
 * [`enableTouch()`](#enabletouch)
 * [`disableTouch()`](#disabletouch)
+* [`enableMyLocation()`](#enablemylocation)
+* [`disableMyLocation()`](#disablemylocation)
+* [`setMyLocationStyle(...)`](#setmylocationstyle)
+* [`setUiSettings(...)`](#setuisettings)
 * [`setOnCameraChangeListener(...)`](#setoncamerachangelistener)
 * [`setOnIndoorBuildingActiveListener(...)`](#setonindoorbuildingactivelistener)
 * [`setOnInfoWindowClickListener(...)`](#setoninfowindowclicklistener)
@@ -156,6 +164,7 @@ onUnmounted(() => {
 * [`setOnPolylineClickListener(...)`](#setonpolylineclicklistener)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -177,6 +186,8 @@ updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 | **`isContains`** | <code>boolean</code> | 隐私权政策是否包含高德开平隐私权政策 true是包含 |
 | **`isShow`**     | <code>boolean</code> | 隐私权政策是否弹窗展示告知用户 true是展示    |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -191,6 +202,25 @@ updatePrivacyAgree(isAgree: boolean) => Promise<void>
 | Param         | Type                 | Description             |
 | ------------- | -------------------- | ----------------------- |
 | **`isAgree`** | <code>boolean</code> | 隐私权政策是否取得用户同意 true是用户同意 |
+
+**Since:** 0.0.2
+
+--------------------
+
+
+### setTerrainEnable(...)
+
+```typescript
+setTerrainEnable(isTerrainEnable: boolean) => Promise<void>
+```
+
+是否打开地形图, 打开地形图之后，底图会变成3D模式，添加的点线面等覆盖物也会自动带有高程。注意：需要在MapView创建之前调用。
+
+| Param                 | Type                 | Description     |
+| --------------------- | -------------------- | --------------- |
+| **`isTerrainEnable`** | <code>boolean</code> | true为打开，默认false |
+
+**Since:** 0.0.5
 
 --------------------
 
@@ -210,6 +240,59 @@ create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackDa
 
 **Returns:** <code>Promise&lt;AMap&gt;</code>
 
+**Since:** 0.0.1
+
+--------------------
+
+
+### showIndoorMap(...)
+
+```typescript
+showIndoorMap(enable: boolean) => Promise<void>
+```
+
+设置是否显示室内地图，默认不显示。注：如果打开了室内地图，会显示3D建筑物，即如果之前有设置不显示3D建筑物，3D建筑物也会被显示出来。
+
+| Param        | Type                 | Description           |
+| ------------ | -------------------- | --------------------- |
+| **`enable`** | <code>boolean</code> | true：显示室内地图；false：不显示 |
+
+**Since:** 0.0.5
+
+--------------------
+
+
+### setMapType(...)
+
+```typescript
+setMapType(type: MapType) => Promise<void>
+```
+
+设置地图模式。
+
+| Param      | Type                                        |
+| ---------- | ------------------------------------------- |
+| **`type`** | <code><a href="#maptype">MapType</a></code> |
+
+**Since:** 0.0.5
+
+--------------------
+
+
+### setTrafficEnabled(...)
+
+```typescript
+setTrafficEnabled(enable: boolean) => Promise<void>
+```
+
+设置是否打开交通路况图层。
+
+| Param        | Type                 | Description |
+| ------------ | -------------------- | ----------- |
+| **`enable`** | <code>boolean</code> | 是否打开交通路况图层。 |
+
+**Since:** 0.0.5
+
 --------------------
 
 
@@ -220,6 +303,8 @@ destroy() => Promise<void>
 ```
 
 销毁地图实例。
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -232,6 +317,8 @@ enableTouch() => Promise<void>
 
 设置地图允许被触控。
 
+**Since:** 0.0.1
+
 --------------------
 
 
@@ -242,6 +329,68 @@ disableTouch() => Promise<void>
 ```
 
 设置地图禁止被触控。
+
+**Since:** 0.0.1
+
+--------------------
+
+
+### enableMyLocation()
+
+```typescript
+enableMyLocation() => Promise<void>
+```
+
+设置启动显示定位蓝点。
+
+**Since:** 0.0.5
+
+--------------------
+
+
+### disableMyLocation()
+
+```typescript
+disableMyLocation() => Promise<void>
+```
+
+设置隐藏定位蓝点并不进行定位。
+
+**Since:** 0.0.5
+
+--------------------
+
+
+### setMyLocationStyle(...)
+
+```typescript
+setMyLocationStyle(style: MyLocationStyle) => Promise<void>
+```
+
+设置定位蓝点的Style。
+
+| Param       | Type                                                        |
+| ----------- | ----------------------------------------------------------- |
+| **`style`** | <code><a href="#mylocationstyle">MyLocationStyle</a></code> |
+
+**Since:** 0.0.5
+
+--------------------
+
+
+### setUiSettings(...)
+
+```typescript
+setUiSettings(args: UiSettings) => Promise<void>
+```
+
+设置地图内置UI及手势控制器。
+
+| Param      | Type                                              |
+| ---------- | ------------------------------------------------- |
+| **`args`** | <code><a href="#uisettings">UiSettings</a></code> |
+
+**Since:** 0.0.5
 
 --------------------
 
@@ -258,6 +407,8 @@ setOnCameraChangeListener(callback?: MapListenerCallback<any> | undefined) => Pr
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -272,6 +423,8 @@ setOnIndoorBuildingActiveListener(callback?: MapListenerCallback<any> | undefine
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0.0.2
 
 --------------------
 
@@ -288,6 +441,8 @@ setOnInfoWindowClickListener(callback?: MapListenerCallback<any> | undefined) =>
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -303,6 +458,8 @@ setOnMapClickListener(callback?: MapListenerCallback<any> | undefined) => Promis
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -312,11 +469,13 @@ setOnMapClickListener(callback?: MapListenerCallback<any> | undefined) => Promis
 setOnMapLoadedListener(callback?: MapListenerCallback<any> | undefined) => Promise<void>
 ```
 
-设置地图加载完成监听接口
+设置地图加载完成监听接口。
 
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0.0.2
 
 --------------------
 
@@ -333,6 +492,8 @@ setOnMapLongClickListener(callback?: MapListenerCallback<any> | undefined) => Pr
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -347,6 +508,8 @@ setOnMapTouchListener(callback?: MapListenerCallback<any> | undefined) => Promis
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0.0.2
 
 --------------------
 
@@ -363,6 +526,8 @@ setOnMarkerClickListener(callback?: MapListenerCallback<any> | undefined) => Pro
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -372,11 +537,13 @@ setOnMarkerClickListener(callback?: MapListenerCallback<any> | undefined) => Pro
 setOnMarkerDragListener(callback?: MapListenerCallback<any> | undefined) => Promise<void>
 ```
 
-marker拖动事件监听接口
+marker拖动事件监听接口。
 
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0.0.2
 
 --------------------
 
@@ -387,11 +554,13 @@ marker拖动事件监听接口
 setOnMultiPointClickListener(callback?: MapListenerCallback<any> | undefined) => Promise<void>
 ```
 
-设置海量点单击事件监听
+设置海量点单击事件监听。
 
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0..2
 
 --------------------
 
@@ -408,6 +577,8 @@ setOnMyLocationChangeListener(callback?: MapListenerCallback<any> | undefined) =
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -422,6 +593,8 @@ setOnPOIClickListener(callback?: MapListenerCallback<any> | undefined) => Promis
 | Param          | Type                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
+
+**Since:** 0.0.2
 
 --------------------
 
@@ -438,6 +611,8 @@ setOnPolylineClickListener(callback?: MapListenerCallback<any> | undefined) => P
 | -------------- | ------------------------------------------------------------------------------ |
 | **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;any&gt;</code> |
 
+**Since:** 0.0.2
+
 --------------------
 
 
@@ -446,24 +621,32 @@ setOnPolylineClickListener(callback?: MapListenerCallback<any> | undefined) => P
 
 #### CreateMapArgs
 
-| Prop              | Type                                              | Description                                                                                        | Default            |
-| ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------ |
-| **`id`**          | <code>string</code>                               | 地图实例的唯一标识符。                                                                                        |                    |
-| **`config`**      | <code><a href="#amapconfig">AMapConfig</a></code> | 地图的初始配置设置。                                                                                         |                    |
-| **`element`**     | <code>HTMLElement</code>                          | The DOM element that the Google Map View will be mounted on which determines size and positioning. |                    |
-| **`forceCreate`** | <code>boolean</code>                              | 如果已经存在具有提供的`id`的地图，则销毁并重新创建地图实例。                                                                   | <code>false</code> |
+| Prop              | Type                                              | Description                                                                                        | Default            | Since |
+| ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------ | ----- |
+| **`id`**          | <code>string</code>                               | 地图实例的唯一标识符。                                                                                        |                    | 0.0.1 |
+| **`config`**      | <code><a href="#amapconfig">AMapConfig</a></code> | 地图的初始配置设置。                                                                                         |                    | 0.0.1 |
+| **`element`**     | <code>HTMLElement</code>                          | The DOM element that the Google Map View will be mounted on which determines size and positioning. |                    | 0.0.1 |
+| **`forceCreate`** | <code>boolean</code>                              | 如果已经存在具有提供的`id`的地图，则销毁并重新创建地图实例。                                                                   | <code>false</code> | 0.0.1 |
 
 
 #### AMapConfig
 
-| Prop                   | Type                 | Description                                                                                         | Default           |
-| ---------------------- | -------------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
-| **`width`**            | <code>number</code>  | Override width for native map.                                                                      |                   |
-| **`height`**           | <code>number</code>  | Override height for native map.                                                                     |                   |
-| **`x`**                | <code>number</code>  | Override absolute x coordinate position for native map.                                             |                   |
-| **`y`**                | <code>number</code>  | Override absolute y coordinate position for native map.                                             |                   |
-| **`devicePixelRatio`** | <code>number</code>  | Override pixel ratio for native map.                                                                |                   |
-| **`touchPoiEnable`**   | <code>boolean</code> | 设置地图`POI`是否允许点击。 默认情况下单击地铁站，地铁路线会高亮，如果关闭了poi单击，则地铁站不会被单击，地铁路线也不会高亮 - true 表示允许点击，为默认值 - false 不允许点击 | <code>true</code> |
+| Prop                        | Type                                                  | Description                                             | Default                                | Since |
+| --------------------------- | ----------------------------------------------------- | ------------------------------------------------------- | -------------------------------------- | ----- |
+| **`width`**                 | <code>number</code>                                   | Override width for native map.                          |                                        | 0.0.1 |
+| **`height`**                | <code>number</code>                                   | Override height for native map.                         |                                        | 0.0.1 |
+| **`x`**                     | <code>number</code>                                   | Override absolute x coordinate position for native map. |                                        | 0.0.1 |
+| **`y`**                     | <code>number</code>                                   | Override absolute y coordinate position for native map. |                                        | 0.0.1 |
+| **`devicePixelRatio`**      | <code>number</code>                                   | Override pixel ratio for native map.                    | <code>1.00f</code>                     | 0.0.1 |
+| **`logoPosition`**          | <code><a href="#logoposition">LogoPosition</a></code> | 设置“高德地图”Logo的位置。                                        | <code>LOGO_POSITION_BOTTOM_LEFT</code> | 0.0.5 |
+| **`mapType`**               | <code><a href="#maptype">MapType</a></code>           | 设置地图模式，默认普通地图。                                          | <code>MAP_TYPE_NORMAL</code>           | 0.0.5 |
+| **`scaleControlsEnabled`**  | <code>boolean</code>                                  | 设置地图是否显示比例尺，默认为false。                                   | <code>false</code>                     | 0.0.5 |
+| **`zoomControlsEnabled`**   | <code>boolean</code>                                  | 设置地图是否允许缩放。默认为true。                                     | <code>true</code>                      | 0.0.5 |
+| **`compassEnabled`**        | <code>boolean</code>                                  | 设置指南针是否可用。默认为启用。                                        | <code>true</code>                      | 0.0.5 |
+| **`scrollGesturesEnabled`** | <code>boolean</code>                                  | 设置地图是否可以手势滑动。默认为true。                                   | <code>true</code>                      | 0.0.5 |
+| **`zoomGesturesEnabled`**   | <code>boolean</code>                                  | 设置地图是否可以通过手势进行缩放。默认为true。                               | <code>true</code>                      | 0.0.5 |
+| **`tiltGesturesEnabled`**   | <code>boolean</code>                                  | 设置地图是否可以通过手势倾斜（3D效果），默认为true。                           | <code>true</code>                      | 0.0.5 |
+| **`rotateGesturesEnabled`** | <code>boolean</code>                                  | 设置地图是否可以通过手势进行旋转。默认为true.                               | <code>true</code>                      | 0.0.5 |
 
 
 #### MapReadyCallbackData
@@ -471,6 +654,24 @@ setOnPolylineClickListener(callback?: MapListenerCallback<any> | undefined) => P
 | Prop        | Type                |
 | ----------- | ------------------- |
 | **`mapId`** | <code>string</code> |
+
+
+#### MyLocationStyle
+
+| Prop                 | Type                                                      | Description                                                             |
+| -------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **`interval`**       | <code>number</code>                                       | 设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生                                   |
+| **`myLocationType`** | <code><a href="#mylocationtype">MyLocationType</a></code> | 设置定位蓝点展现模式。                                                             |
+| **`showMyLocation`** | <code>boolean</code>                                      | 设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。 |
+
+
+#### UiSettings
+
+地图内置UI及手势控制器。
+
+| Prop                          | Type                 | Description | Default            |
+| ----------------------------- | -------------------- | ----------- | ------------------ |
+| **`myLocationButtonEnabled`** | <code>boolean</code> | 设置定位按钮是否可见。 | <code>false</code> |
 
 
 ### Type Aliases
@@ -481,5 +682,43 @@ setOnPolylineClickListener(callback?: MapListenerCallback<any> | undefined) => P
 The callback function to be called when map events are emitted.
 
 <code>(data: T): void</code>
+
+
+### Enums
+
+
+#### LogoPosition
+
+| Members                           | Value          | Description |
+| --------------------------------- | -------------- | ----------- |
+| **`LOGO_POSITION_BOTTOM_LEFT`**   | <code>0</code> | 左下          |
+| **`LOGO_POSITION_BOTTOM_CENTER`** | <code>1</code> | 底部剧中        |
+| **`LOGO_POSITION_BOTTOM_RIGHT`**  | <code>2</code> | 右下          |
+
+
+#### MapType
+
+| Members                   | Value          | Description |
+| ------------------------- | -------------- | ----------- |
+| **`MAP_TYPE_NORMAL`**     | <code>1</code> | 普通地图        |
+| **`MAP_TYPE_SATELLITE`**  | <code>2</code> | 卫星地图        |
+| **`MAP_TYPE_NIGHT`**      | <code>3</code> | 黑夜地图        |
+| **`MAP_TYPE_NAVI`**       | <code>4</code> | 导航地图        |
+| **`MAP_TYPE_BUS`**        | <code>5</code> | 公交地图        |
+| **`MAP_TYPE_NAVI_NIGHT`** | <code>6</code> | 导航黑夜地图      |
+
+
+#### MyLocationType
+
+| Members                                       | Value          | Description                                               |
+| --------------------------------------------- | -------------- | --------------------------------------------------------- |
+| **`LOCATION_TYPE_SHOW`**                      | <code>0</code> | 只定位一次。                                                    |
+| **`LOCATION_TYPE_LOCATE`**                    | <code>1</code> | 定位一次，且将视角移动到地图中心点。                                        |
+| **`LOCATION_TYPE_FOLLOW`**                    | <code>2</code> | 连续定位、且将视角移动到地图中心点，定位蓝点跟随设备移动。（1秒1次定位）                     |
+| **`LOCATION_TYPE_MAP_ROTATE`**                | <code>3</code> | 连续定位、且将视角移动到地图中心点，地图依照设备方向旋转，定位点会跟随设备移动。（1秒1次定位）          |
+| **`LOCATION_TYPE_LOCATION_ROTATE`**           | <code>4</code> | 连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。 |
+| **`LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER`** | <code>5</code> | 连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。                |
+| **`LOCATION_TYPE_FOLLOW_NO_CENTER`**          | <code>6</code> | 连续定位、蓝点不会移动到地图中心点，并且蓝点会跟随设备移动。                            |
+| **`LOCATION_TYPE_MAP_ROTATE_NO_CENTER`**      | <code>7</code> | 连续定位、蓝点不会移动到地图中心点，地图依照设备方向旋转，并且蓝点会跟随设备移动。                 |
 
 </docgen-api>
