@@ -8,7 +8,7 @@ export enum LogoPosition {
    */
   LOGO_POSITION_BOTTOM_LEFT = 0,
   /**
-   * 底部剧中
+   * 底部居中
    */
   LOGO_POSITION_BOTTOM_CENTER = 1,
   /**
