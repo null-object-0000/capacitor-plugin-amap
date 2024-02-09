@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import { MapListenerCallback, MapReadyCallbackData, MapType, UiSettings } from './definitions';
+import { CameraPosition, MapListenerCallback, MapReadyCallbackData, MapStatusLimits, MapType, UiSettings } from './definitions';
 import type { CreateMapArgs, MyLocationStyle } from './implementation';
 import { CapacitorAMap } from './implementation';
 
@@ -99,6 +99,26 @@ export interface AMapInterface {
      * @since 0.0.5
      */
     setUiSettings(args: UiSettings): Promise<void>;
+
+    /**
+     * 给地图设置一个新的状态。
+     * @param args 新的地图状态。
+     * @since 0.0.6
+     */
+    cameraUpdatePosition(args: CameraPosition): Promise<void>;
+
+    /**
+     * 设置地图缩放级别。
+     * @param zoom 地图缩放级别。地图的缩放级别一共分为 17 级，从 3 到 19。数字越大，展示的图面信息越精细。
+     * @since 0.0.6
+     */
+    cameraZoomTo(zoom: Number): Promise<void>;
+
+    /**
+     * 设置地图显示范围，无论如何操作地图，显示区域都不能超过该矩形区域。
+     * @since 0.0.6
+     */
+    setMapStatusLimits(args: MapStatusLimits): Promise<void>;
 
     /**
      * 设置地图状态的监听接口。
@@ -440,6 +460,18 @@ export class AMap implements AMapInterface {
 
     public setUiSettings(args: UiSettings): Promise<void> {
         return CapacitorAMap.setUiSettings({ id: this.id, ...args });
+    }
+
+    public cameraUpdatePosition(args: CameraPosition): Promise<void> {
+        return CapacitorAMap.cameraUpdatePosition({ id: this.id, cameraOptions: args });
+    }
+
+    public cameraZoomTo(zoom: Number): Promise<void> {
+        return CapacitorAMap.cameraZoomTo({ id: this.id, zoom });
+    }
+
+    public setMapStatusLimits(args: MapStatusLimits): Promise<void> {
+        return CapacitorAMap.setMapStatusLimits({ id: this.id, ...args });
     }
 
     private initScrolling(): void {

@@ -2,10 +2,15 @@ package site.snewbie.plugins.amap;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
+import com.getcapacitor.JSObject;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class AMapConfig {
     private Integer width;
     private Integer height;
@@ -23,7 +28,9 @@ public class AMapConfig {
     private boolean tiltGesturesEnabled = true;
     private boolean rotateGesturesEnabled = true;
 
-    public AMapConfig(JSONObject fromJSONObject) throws JSONException {
+    private CameraOptions cameraOptions;
+
+    public AMapConfig(JSObject fromJSONObject) throws JSONException {
         if (!fromJSONObject.has("width")) {
             throw new IllegalArgumentException("AMapConfig object is missing the required 'width' property");
         }
@@ -80,121 +87,14 @@ public class AMapConfig {
             rotateGesturesEnabled = fromJSONObject.getBoolean("rotateGesturesEnabled");
         }
 
+        JSObject cameraOptionsObj = fromJSONObject.getJSObject("cameraOptions");
+        if (cameraOptionsObj != null) {
+            cameraOptions = new CameraOptions(cameraOptionsObj);
+        }
+
         width = fromJSONObject.getInt("width");
         height = fromJSONObject.getInt("height");
         x = fromJSONObject.getInt("x");
         y = fromJSONObject.getInt("y");
-    }
-
-    public Integer getWidth() {
-        return width;
-    }
-
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
-
-    public Integer getX() {
-        return x;
-    }
-
-    public void setX(Integer x) {
-        this.x = x;
-    }
-
-    public Integer getY() {
-        return y;
-    }
-
-    public void setY(Integer y) {
-        this.y = y;
-    }
-
-    public Float getDevicePixelRatio() {
-        return devicePixelRatio;
-    }
-
-    public void setDevicePixelRatio(Float devicePixelRatio) {
-        this.devicePixelRatio = devicePixelRatio;
-    }
-
-    public int getLogoPosition() {
-        return logoPosition;
-    }
-
-    public void setLogoPosition(int logoPosition) {
-        this.logoPosition = logoPosition;
-    }
-
-    public int getMapType() {
-        return mapType;
-    }
-
-    public void setMapType(int mapType) {
-        this.mapType = mapType;
-    }
-
-    public boolean isScaleControlsEnabled() {
-        return scaleControlsEnabled;
-    }
-
-    public void setScaleControlsEnabled(boolean scaleControlsEnabled) {
-        this.scaleControlsEnabled = scaleControlsEnabled;
-    }
-
-    public boolean isZoomControlsEnabled() {
-        return zoomControlsEnabled;
-    }
-
-    public void setZoomControlsEnabled(boolean zoomControlsEnabled) {
-        this.zoomControlsEnabled = zoomControlsEnabled;
-    }
-
-    public boolean isCompassEnabled() {
-        return compassEnabled;
-    }
-
-    public void setCompassEnabled(boolean compassEnabled) {
-        this.compassEnabled = compassEnabled;
-    }
-
-    public boolean isScrollGesturesEnabled() {
-        return scrollGesturesEnabled;
-    }
-
-    public void setScrollGesturesEnabled(boolean scrollGesturesEnabled) {
-        this.scrollGesturesEnabled = scrollGesturesEnabled;
-    }
-
-    public boolean isZoomGesturesEnabled() {
-        return zoomGesturesEnabled;
-    }
-
-    public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
-        this.zoomGesturesEnabled = zoomGesturesEnabled;
-    }
-
-    public boolean isTiltGesturesEnabled() {
-        return tiltGesturesEnabled;
-    }
-
-    public void setTiltGesturesEnabled(boolean tiltGesturesEnabled) {
-        this.tiltGesturesEnabled = tiltGesturesEnabled;
-    }
-
-    public boolean isRotateGesturesEnabled() {
-        return rotateGesturesEnabled;
-    }
-
-    public void setRotateGesturesEnabled(boolean rotateGesturesEnabled) {
-        this.rotateGesturesEnabled = rotateGesturesEnabled;
     }
 }

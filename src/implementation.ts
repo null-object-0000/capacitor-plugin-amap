@@ -3,6 +3,8 @@ import { registerPlugin } from '@capacitor/core';
 
 import type {
     AMapConfig,
+    CameraPosition,
+    MapStatusLimits,
     MapType,
     UiSettings
 } from './definitions';
@@ -102,7 +104,18 @@ export interface MapBoundsArgs {
  * 地图内置UI及手势控制器。
  * @since 0.0.5
  */
-export interface UiSettingsArgs extends UiSettings {
+export interface SetUiSettingsArgs extends UiSettings {
+    /**
+     * 地图实例的唯一标识符。
+     */
+    id: string;
+}
+
+/**
+ * 通过指定的两个经纬度坐标（左下、右上）构建的一个矩形区域
+ * @since 0.0.6
+ */
+export interface SetMapStatusLimitsArgs extends MapStatusLimits {
     /**
      * 地图实例的唯一标识符。
      */
@@ -129,7 +142,11 @@ export interface AMapPlugin extends Plugin {
     disableMyLocation(args: { id: string; }): Promise<void>;
     setMyLocationStyle(args: { id: string; style: MyLocationStyle; }): Promise<void>;
 
-    setUiSettings(args: UiSettingsArgs): Promise<void>;
+    setUiSettings(args: SetUiSettingsArgs): Promise<void>;
+
+    cameraUpdatePosition(args: { id: string; cameraOptions: CameraPosition; }): Promise<void>;
+    cameraZoomTo(args: { id: string; zoom: Number; }): Promise<void>;
+    setMapStatusLimits(args: SetMapStatusLimitsArgs): Promise<void>;
 }
 
 

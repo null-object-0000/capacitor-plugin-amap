@@ -28,6 +28,10 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class CapacitorAMap {
     private final String id;
@@ -35,27 +39,8 @@ public class CapacitorAMap {
     private final CapacitorAMapPlugin delegate;
 
     private final MapView mapView;
+    @Setter
     private boolean touchEnabled;
-
-    public String getId() {
-        return id;
-    }
-
-    public AMapConfig getConfig() {
-        return config;
-    }
-
-    public MapView getMapView() {
-        return mapView;
-    }
-
-    public boolean isTouchEnabled() {
-        return touchEnabled;
-    }
-
-    public void setTouchEnabled(boolean touchEnabled) {
-        this.touchEnabled = touchEnabled;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     public CapacitorAMap(String id, AMapConfig config, CapacitorAMapPlugin delegate, PluginCall call) {
@@ -73,6 +58,10 @@ public class CapacitorAMap {
                 .tiltGesturesEnabled(config.isTiltGesturesEnabled())
                 .zoomControlsEnabled(config.isZoomControlsEnabled())
                 .zoomGesturesEnabled(config.isZoomGesturesEnabled());
+
+        if (config.getCameraOptions() != null) {
+            mapOptions.camera(config.getCameraOptions().toCameraPosition());
+        }
 
         this.mapView = new MapView(delegate.getContext(), mapOptions);
         this.mapView.onCreate(null);
