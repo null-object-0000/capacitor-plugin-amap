@@ -13,8 +13,11 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.amap.api.maps.CameraUpdate;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.offlinemap.OfflineMapActivity;
 import com.getcapacitor.JSObject;
@@ -449,6 +452,84 @@ public class CapacitorAMapPlugin extends Plugin {
             if (call.hasOption("myLocationButtonEnabled")) {
                 uiSettings.setMyLocationButtonEnabled(Boolean.TRUE.equals(call.getBoolean("myLocationButtonEnabled", false)));
             }
+
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void cameraUpdatePosition(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+
+            if (!call.getData().has("cameraOptions")) {
+                throw new IllegalArgumentException("cameraOptions is required");
+            }
+
+            CameraOptions cameraOptions = new CameraOptions(call.getObject("cameraOptions"));
+
+            // 改变地图的中心点
+            // 参数依次是：视角调整区域的中心点坐标、希望调整到的缩放级别、俯仰角0°~45°（垂直与地图时为0）、偏航角 0~360° (正北方为0)
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraOptions.toCameraPosition());
+
+            if (cameraOptions.isAnimated()) {
+                map.getMapView().getMap().animateCamera(cameraUpdate);
+            } else {
+                map.getMapView().getMap().moveCamera(cameraUpdate);
+            }
+
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void cameraZoomTo(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+
+            boolean animated = Boolean.TRUE.equals(call.getBoolean("animated", false));
+            Integer zoom = call.getInt("zoom", null);
+            if (zoom == null) {
+                throw new IllegalArgumentException("zoom is required");
+            }
+
+            // 改变地图的缩放级别
+            // 设置希望展示的地图缩放级别
+            CameraUpdate mCameraUpdate = CameraUpdateFactory.zoomTo(zoom);
+
+            if (animated) {
+                map.getMapView().getMap().animateCamera(mCameraUpdate);
+            } else {
+                map.getMapView().getMap().moveCamera(mCameraUpdate);
+            }
+
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void setMapStatusLimits(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+
+            Location southwest = Location.fromJSObject(call, "southwest");
+            if (null == southwest) {
+                throw new IllegalArgumentException("southwest object is missing");
+            }
+
+            Location northeast = Location.fromJSObject(call, "northeast");
+            if (null == northeast) {
+                throw new IllegalArgumentException("northeast object is missing");
+            }
+
+            LatLngBounds latLngBounds = new LatLngBounds(southwest.toLatLng(), northeast.toLatLng());
+            map.getMapView().getMap().setMapStatusLimits(latLngBounds);
 
             call.resolve();
         } catch (Exception e) {

@@ -56,6 +56,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
+    compileOnly 'org.projectlombok:lombok:latest.integration'
+    annotationProcessor 'org.projectlombok:lombok:latest.integration'
+
     implementation 'cn.hutool:hutool-all:latest.integration'
 
     implementation 'com.amap.api:3dmap:latest.integration'

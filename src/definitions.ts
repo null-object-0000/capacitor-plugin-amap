@@ -8,7 +8,7 @@ export enum LogoPosition {
    */
   LOGO_POSITION_BOTTOM_LEFT = 0,
   /**
-   * 底部剧中
+   * 底部居中
    */
   LOGO_POSITION_BOTTOM_CENTER = 1,
   /**
@@ -49,6 +49,29 @@ export enum MapType {
 }
 
 /**
+ * 相机位置，这个类包含了所有的可视区域的位置参数。
+ * @since 0.0.6
+ */
+export interface CameraPosition {
+  /**
+   * 目标位置的屏幕中心点经纬度坐标。
+   */
+  target: LatLng;
+  /**
+   * 目标可视区域的缩放级别。
+   */
+  zoom: number;
+  /**
+   * 目标可视区域的倾斜度，以角度为单位。
+   */
+  tilt: number;
+  /**
+   * 可视区域指向的方向，以角度为单位，从正北向逆时针方向计算，从0 度到360 度。
+   */
+  bearing: number;
+}
+
+/**
  * @since 0.0.1
  */
 export interface AMapConfig {
@@ -78,6 +101,7 @@ export interface AMapConfig {
    * @since 0.0.1
    */
   devicePixelRatio?: number;
+
   /**
    * 设置“高德地图”Logo的位置。
    * @default LOGO_POSITION_BOTTOM_LEFT
@@ -132,6 +156,11 @@ export interface AMapConfig {
    * @since 0.0.5
    */
   rotateGesturesEnabled?: boolean;
+
+  /**
+   * 设置地图初始化时的地图状态， 默认地图中心点为北京天安门，缩放级别为 10.0f。
+   */
+  cameraOptions?: CameraPosition;
 }
 
 /**
@@ -144,6 +173,36 @@ export interface UiSettings {
    * @default false
    */
   myLocationButtonEnabled?: boolean;
+}
+
+/**
+ * 存储经纬度坐标值的类，单位角度。
+ * @since 0.0.6
+ */
+export interface LatLng {
+  /**
+   * 纬度 (垂直方向)
+   */
+  latitude: number;
+  /**
+   * 经度 (水平方向)
+   */
+  longitude: number;
+}
+
+/**
+ * 通过指定的两个经纬度坐标（左下、右上）构建的一个矩形区域
+ * @since 0.0.6
+ */
+export interface MapStatusLimits {
+  /**
+   * 西南角坐标。
+   */
+  southwest: LatLng;
+  /**
+   * 东北角坐标。
+   */
+  northeast: LatLng;
 }
 
 /**
