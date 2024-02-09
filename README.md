@@ -1,6 +1,6 @@
 # @snewbie/capacitor-amap
 
-<a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/v/@snewbie/capacitor-amap.svg?sanitize=true" alt="Version"></a> <a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/l/@snewbie/capacitor-amap.svg?sanitize=true" alt="License"></a>
+<a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/v/@snewbie/capacitor-amap.svg?sanitize=true" alt="Version"></a> <a style="padding-right: 5px;" href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/l/@snewbie/capacitor-amap.svg?sanitize=true" alt="License"></a>[![Publish Capacitor Android Plugin To NPM](https://github.com/null-object-0000/capacitor-plugin-amap/actions/workflows/capacitor-android-plugin-publish.yml/badge.svg)](https://github.com/null-object-0000/capacitor-plugin-amap/actions/workflows/capacitor-android-plugin-publish.yml)
 
 参考 [Capacitor Community Google Maps](https://github.com/capacitor-community/google-maps) 实现方式完成使用 [高德开放平台 Android 地图 SDK](https://lbs.amap.com/api/android-sdk/gettingstarted) 开发的 Capacitor 插件（短期内仅维护安卓端）。
 

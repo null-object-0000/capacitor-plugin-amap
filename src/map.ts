@@ -106,14 +106,12 @@ export interface AMapInterface {
      * @since 0.0.6
      */
     cameraUpdatePosition(args: CameraPosition): Promise<void>;
-
     /**
      * 设置地图缩放级别。
      * @param zoom 地图缩放级别。地图的缩放级别一共分为 17 级，从 3 到 19。数字越大，展示的图面信息越精细。
      * @since 0.0.6
      */
     cameraZoomTo(zoom: Number): Promise<void>;
-
     /**
      * 设置地图显示范围，无论如何操作地图，显示区域都不能超过该矩形区域。
      * @since 0.0.6
