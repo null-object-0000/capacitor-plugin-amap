@@ -98,7 +98,7 @@ const newMap = await AMap.create({
 });
 ```
 
-## Full Examples
+## 完整示例
 
 ### Vue
 
@@ -139,6 +139,23 @@ onUnmounted(() => {
 </script>
 ```
 
+### 离线地图 UI 组件
+
+Activity 在 SDK 内部实现，仅需要在工程 AndroidManifest.xml 中配置 site.snewbie.plugins.amap.extend.OfflineMapActivity 即可
+
+```xml
+<activity android:name="site.snewbie.plugins.amap.extend.OfflineMapActivity" 
+              android:screenOrientation="portrait"  />
+```
+
+```html
+<script setup lang="ts">
+import { AMap } from '@snewbie/capacitor-amap';
+
+await AMap.openOfflineMapActivity();
+</script>
+```
+
 ## API
 
 <docgen-index>
@@ -146,6 +163,7 @@ onUnmounted(() => {
 * [`updatePrivacyShow(...)`](#updateprivacyshow)
 * [`updatePrivacyAgree(...)`](#updateprivacyagree)
 * [`setTerrainEnable(...)`](#setterrainenable)
+* [`openOfflineMapActivity()`](#openofflinemapactivity)
 * [`create(...)`](#create)
 * [`showIndoorMap(...)`](#showindoormap)
 * [`setMapType(...)`](#setmaptype)
@@ -190,7 +208,7 @@ onUnmounted(() => {
 updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 ```
 
-更新隐私合规状态，需要在初始化地图之前完成
+更新隐私合规状态，需要在初始化地图之前完成。
 
 | Param            | Type                 | Description                |
 | ---------------- | -------------------- | -------------------------- |
@@ -208,7 +226,7 @@ updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 updatePrivacyAgree(isAgree: boolean) => Promise<void>
 ```
 
-更新同意隐私状态，需要在初始化地图之前完成
+更新同意隐私状态，需要在初始化地图之前完成。
 
 | Param         | Type                 | Description             |
 | ------------- | -------------------- | ----------------------- |
@@ -232,6 +250,19 @@ setTerrainEnable(isTerrainEnable: boolean) => Promise<void>
 | **`isTerrainEnable`** | <code>boolean</code> | true为打开，默认false |
 
 **Since:** 0.0.5
+
+--------------------
+
+
+### openOfflineMapActivity()
+
+```typescript
+openOfflineMapActivity() => Promise<void>
+```
+
+启动离线地图组件。
+
+**Since:** 0.0.7
 
 --------------------
 

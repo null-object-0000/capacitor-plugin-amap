@@ -4,10 +4,14 @@ import static com.amap.api.maps.AMap.MAP_TYPE_NAVI_NIGHT;
 import static com.amap.api.maps.AMap.MAP_TYPE_NORMAL;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
@@ -19,7 +23,6 @@ import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.offlinemap.OfflineMapActivity;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -37,6 +40,7 @@ import java.util.Map;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjUtil;
+import site.snewbie.plugins.amap.extend.OfflineMapActivity;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 @CapacitorPlugin(name = "CapacitorAMap", permissions = {
@@ -156,6 +160,29 @@ public class CapacitorAMapPlugin extends Plugin {
 
             MapsInitializer.setTerrainEnable(isTerrainEnable);
             call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void openOfflineMapActivity(PluginCall call) {
+        try {
+            Intent intent = new Intent(this.bridge.getActivity(), OfflineMapActivity.class);
+            this.bridge.getActivity().startActivity(intent);
+
+            // 在调用 openOfflineMapActivity 的地方
+            BroadcastReceiver receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (OfflineMapActivity.ON_CREATED_ACTION.equals(intent.getAction())) {
+                        call.resolve();
+                    }
+                }
+            };
+
+            IntentFilter filter = new IntentFilter(OfflineMapActivity.ON_CREATED_ACTION);
+            this.bridge.getActivity().registerReceiver(receiver, filter);
         } catch (Exception e) {
             call.reject(e.getMessage(), e);
         }
@@ -369,11 +396,6 @@ public class CapacitorAMapPlugin extends Plugin {
         Double y = jsonObject.getDouble("y");
 
         return new RectF(x.floatValue(), y.floatValue(), (float) (x + width), (float) (y + height));
-    }
-
-    @PluginMethod
-    public void openOfflineMapActivity() {
-        this.bridge.getActivity().startActivity(new Intent(this.bridge.getActivity(), OfflineMapActivity.class));
     }
 
     @PluginMethod

@@ -11,7 +11,7 @@ import { CapacitorAMap } from './implementation';
  */
 export interface AMapInterface {
     /**
-     * 更新隐私合规状态，需要在初始化地图之前完成
+     * 更新隐私合规状态，需要在初始化地图之前完成。
      * @function AMap.updatePrivacyShow
      * @param isContains 隐私权政策是否包含高德开平隐私权政策  true是包含 
      * @param isShow 隐私权政策是否弹窗展示告知用户 true是展示 
@@ -19,7 +19,7 @@ export interface AMapInterface {
      */
     updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void>;
     /**
-     * 更新同意隐私状态，需要在初始化地图之前完成
+     * 更新同意隐私状态，需要在初始化地图之前完成。
      * @function AMap.updatePrivacyAgree
      * @param isAgree 隐私权政策是否取得用户同意  true是用户同意
      * @since 0.0.2
@@ -33,6 +33,12 @@ export interface AMapInterface {
      * @since 0.0.5
      */
     setTerrainEnable(isTerrainEnable: boolean): Promise<void>;
+    /**
+     * 启动离线地图组件。
+     * @function AMap.openOfflineMapActivity
+     * @since 0.0.7
+     */
+    openOfflineMapActivity(): Promise<void>;
 
     /**
      * 创建地图实例。
@@ -99,6 +105,7 @@ export interface AMapInterface {
      * @since 0.0.5
      */
     setUiSettings(args: UiSettings): Promise<void>;
+
 
     /**
      * 给地图设置一个新的状态。
@@ -231,6 +238,10 @@ export class AMap implements AMapInterface {
         return CapacitorAMap.setTerrainEnable({
             isTerrainEnable
         });
+    }
+
+    public static openOfflineMapActivity(): Promise<void> {
+        return CapacitorAMap.openOfflineMapActivity();
     }
 
     public static async create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap> {
@@ -407,6 +418,13 @@ export class AMap implements AMapInterface {
      * @deprecated Use AMap.setTerrainEnable instead.
      */
     public setTerrainEnable(_isTerrainEnable: boolean): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * @deprecated Use AMap.openOfflineMapActivity instead.
+     */
+    public openOfflineMapActivity(): Promise<void> {
         throw new Error('Method not implemented.');
     }
 

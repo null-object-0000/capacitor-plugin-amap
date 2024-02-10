@@ -1,6 +1,6 @@
 {
   "name": "@snewbie/capacitor-amap",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "使用高德开放平台 Android 地图 SDK 开发的 Capacitor 插件（安卓端）。",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

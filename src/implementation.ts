@@ -126,6 +126,7 @@ export interface AMapPlugin extends Plugin {
     updatePrivacyShow(args: { isContains: boolean; isShow: boolean; }): Promise<void>;
     updatePrivacyAgree(args: { isAgree: boolean; }): Promise<void>;
     setTerrainEnable(args: { isTerrainEnable: boolean; }): Promise<void>;
+    openOfflineMapActivity(): Promise<void>;
     create(options: CreateMapArgs): Promise<void>;
     showIndoorMap(args: { id: string; enable: boolean; }): Promise<void>;
     setMapType(args: { id: string; type: MapType; }): Promise<void>;
