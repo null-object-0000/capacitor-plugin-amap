@@ -86,15 +86,10 @@ const mapRef = document.getElementById('map');
 
 const newMap = await AMap.create({
   id: 'my-map', // Unique identifier for this map instance
-  element: mapRef, // reference to the capacitor-google-map element
+  element: mapRef, // reference to the capacitor-amap element
   config: {
-    center: {
-      // The initial position to be rendered by the map
-      lat: 33.6,
-      lng: -117.9,
-    },
-    zoom: 8, // The initial zoom level to be rendered by the map
-  },
+
+  }
 });
 ```
 
@@ -108,6 +103,7 @@ const newMap = await AMap.create({
 </template>
 
 <script setup lang="ts">
+import { onIonViewWillEnter, onIonViewWillLeave } from '@ionic/vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { AMap } from '@snewbie/capacitor-amap';
 
@@ -121,19 +117,24 @@ onMounted(async () => {
         id: 'main',
         element: mapRef.value, 
         config: {
-            center: {
-                // The initial position to be rendered by the map
-                lat: 33.6,
-                lng: -117.9,
-            },
-            zoom: 8, // The initial zoom level to be rendered by the map
-        },
+          
+        }
     });
 });
 
+onIonViewWillEnter(async () => {
+  newMap?.show()
+  newMap?.enableTouch()
+})
+
+onIonViewWillLeave(async () => {
+  newMap?.hide()
+  newMap?.disableTouch()
+})
+
 onUnmounted(() => {
-  if (map) {
-    map.destroy()
+  if (newMap) {
+    newMap.destroy()
   }
 })
 </script>
@@ -169,6 +170,8 @@ await AMap.openOfflineMapActivity();
 * [`setMapType(...)`](#setmaptype)
 * [`setTrafficEnabled(...)`](#settrafficenabled)
 * [`destroy()`](#destroy)
+* [`show()`](#show)
+* [`hide()`](#hide)
 * [`enableTouch()`](#enabletouch)
 * [`disableTouch()`](#disabletouch)
 * [`enableMyLocation()`](#enablemylocation)
@@ -347,6 +350,32 @@ destroy() => Promise<void>
 销毁地图实例。
 
 **Since:** 0.0.1
+
+--------------------
+
+
+### show()
+
+```typescript
+show() => Promise<void>
+```
+
+显示地图。
+
+**Since:** 0.0.7
+
+--------------------
+
+
+### hide()
+
+```typescript
+hide() => Promise<void>
+```
+
+隐藏地图。
+
+**Since:** 0.0.7
 
 --------------------
 

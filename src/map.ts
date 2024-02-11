@@ -45,7 +45,6 @@ export interface AMapInterface {
      * @function AMap.create
      * @param {CreateMapArgs} options - 创建地图的参数。
      * @param callback
-     * @returns AMap
      * @since 0.0.1
      */
     create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap>;
@@ -73,6 +72,16 @@ export interface AMapInterface {
      * @since 0.0.1
      */
     destroy(): Promise<void>;
+    /**
+     * 显示地图。
+     * @since 0.0.7
+     */
+    show(): Promise<void>;
+    /**
+     * 隐藏地图。
+     * @since 0.0.7
+     */
+    hide(): Promise<void>;
     /**
      * 设置地图允许被触控。
      * @since 0.0.1
@@ -268,16 +277,7 @@ export class AMap implements AMapInterface {
         if (Capacitor.isNativePlatform()) {
             (options.element as any) = {};
 
-            const getMapBounds = () => {
-                const mapRect =
-                    newMap.element?.getBoundingClientRect() ?? ({} as DOMRect);
-                return {
-                    x: mapRect.x,
-                    y: mapRect.y,
-                    width: mapRect.width,
-                    height: mapRect.height,
-                };
-            };
+            const getMapBounds = () => newMap.element?.getBoundingClientRect() ?? ({} as DOMRect);
 
             const onDisplay = () => {
                 CapacitorAMap.onDisplay({
@@ -451,6 +451,14 @@ export class AMap implements AMapInterface {
         });
     }
 
+    public show(): Promise<void> {
+        return CapacitorAMap.show({ id: this.id });
+    }
+    
+    public hide(): Promise<void> {
+        return CapacitorAMap.hide({ id: this.id });
+    }
+
     public enableTouch(): Promise<void> {
         return CapacitorAMap.enableTouch({ id: this.id });
     }
@@ -535,12 +543,7 @@ export class AMap implements AMapInterface {
 
             CapacitorAMap.onScroll({
                 id: this.id,
-                mapBounds: {
-                    x: mapRect.x,
-                    y: mapRect.y,
-                    width: mapRect.width,
-                    height: mapRect.height,
-                },
+                mapBounds: mapRect,
             });
         }
     }

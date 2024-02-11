@@ -132,6 +132,8 @@ export interface AMapPlugin extends Plugin {
     setMapType(args: { id: string; type: MapType; }): Promise<void>;
     setTrafficEnabled(args: { id: string; enable: boolean; }): Promise<void>;
     destroy(args: { id: string }): Promise<void>;
+    show(args: { id: string; }): Promise<void>;
+    hide(args: { id: string; }): Promise<void>;
     enableTouch(args: { id: string }): Promise<void>;
     disableTouch(args: { id: string }): Promise<void>;
     onScroll(args: MapBoundsArgs): Promise<void>;
