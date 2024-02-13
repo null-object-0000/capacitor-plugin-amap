@@ -133,9 +133,7 @@ onIonViewWillLeave(async () => {
 })
 
 onUnmounted(() => {
-  if (newMap) {
-    newMap.destroy()
-  }
+  newMap?.destroy()
 })
 </script>
 ```
