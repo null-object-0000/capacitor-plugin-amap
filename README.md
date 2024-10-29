@@ -1,6 +1,6 @@
 # @snewbie/capacitor-amap
 
-<a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/v/@snewbie/capacitor-amap.svg?sanitize=true" alt="Version"></a> <a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/l/@snewbie/capacitor-amap.svg?sanitize=true" alt="License"></a>
+<a href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/v/@snewbie/capacitor-amap.svg?sanitize=true" alt="Version"></a> <a  href="https://www.npmjs.com/package/@snewbie/capacitor-amap"><img src="https://img.shields.io/npm/l/@snewbie/capacitor-amap.svg?sanitize=true" alt="License"></a> [![Publish Capacitor Android Plugin To NPM](https://github.com/null-object-0000/capacitor-plugin-amap/actions/workflows/capacitor-android-plugin-publish.yml/badge.svg)](https://github.com/null-object-0000/capacitor-plugin-amap/actions/workflows/capacitor-android-plugin-publish.yml)
 
 参考 [Capacitor Community Google Maps](https://github.com/capacitor-community/google-maps) 实现方式完成使用 [高德开放平台 Android 地图 SDK](https://lbs.amap.com/api/android-sdk/gettingstarted) 开发的 Capacitor 插件（短期内仅维护安卓端）。
 
@@ -86,19 +86,14 @@ const mapRef = document.getElementById('map');
 
 const newMap = await AMap.create({
   id: 'my-map', // Unique identifier for this map instance
-  element: mapRef, // reference to the capacitor-google-map element
+  element: mapRef, // reference to the capacitor-amap element
   config: {
-    center: {
-      // The initial position to be rendered by the map
-      lat: 33.6,
-      lng: -117.9,
-    },
-    zoom: 8, // The initial zoom level to be rendered by the map
-  },
+
+  }
 });
 ```
 
-## Full Examples
+## 完整示例
 
 ### Vue
 
@@ -108,6 +103,7 @@ const newMap = await AMap.create({
 </template>
 
 <script setup lang="ts">
+import { onIonViewWillEnter, onIonViewWillLeave } from '@ionic/vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { AMap } from '@snewbie/capacitor-amap';
 
@@ -121,21 +117,41 @@ onMounted(async () => {
         id: 'main',
         element: mapRef.value, 
         config: {
-            center: {
-                // The initial position to be rendered by the map
-                lat: 33.6,
-                lng: -117.9,
-            },
-            zoom: 8, // The initial zoom level to be rendered by the map
-        },
+          
+        }
     });
 });
 
-onUnmounted(() => {
-  if (map) {
-    map.destroy()
-  }
+onIonViewWillEnter(async () => {
+  newMap?.show()
+  newMap?.enableTouch()
 })
+
+onIonViewWillLeave(async () => {
+  newMap?.hide()
+  newMap?.disableTouch()
+})
+
+onUnmounted(() => {
+  newMap?.destroy()
+})
+</script>
+```
+
+### 离线地图 UI 组件
+
+Activity 在 SDK 内部实现，仅需要在工程 AndroidManifest.xml 中配置 site.snewbie.plugins.amap.extend.OfflineMapActivity 即可
+
+```xml
+<activity android:name="site.snewbie.plugins.amap.extend.OfflineMapActivity" 
+              android:screenOrientation="portrait"  />
+```
+
+```html
+<script setup lang="ts">
+import { AMap } from '@snewbie/capacitor-amap';
+
+await AMap.openOfflineMapActivity();
 </script>
 ```
 
@@ -146,11 +162,14 @@ onUnmounted(() => {
 * [`updatePrivacyShow(...)`](#updateprivacyshow)
 * [`updatePrivacyAgree(...)`](#updateprivacyagree)
 * [`setTerrainEnable(...)`](#setterrainenable)
+* [`openOfflineMapActivity()`](#openofflinemapactivity)
 * [`create(...)`](#create)
 * [`showIndoorMap(...)`](#showindoormap)
 * [`setMapType(...)`](#setmaptype)
 * [`setTrafficEnabled(...)`](#settrafficenabled)
 * [`destroy()`](#destroy)
+* [`show()`](#show)
+* [`hide()`](#hide)
 * [`enableTouch()`](#enabletouch)
 * [`disableTouch()`](#disabletouch)
 * [`enableMyLocation()`](#enablemylocation)
@@ -190,7 +209,7 @@ onUnmounted(() => {
 updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 ```
 
-更新隐私合规状态，需要在初始化地图之前完成
+更新隐私合规状态，需要在初始化地图之前完成。
 
 | Param            | Type                 | Description                |
 | ---------------- | -------------------- | -------------------------- |
@@ -208,7 +227,7 @@ updatePrivacyShow(isContains: boolean, isShow: boolean) => Promise<void>
 updatePrivacyAgree(isAgree: boolean) => Promise<void>
 ```
 
-更新同意隐私状态，需要在初始化地图之前完成
+更新同意隐私状态，需要在初始化地图之前完成。
 
 | Param         | Type                 | Description             |
 | ------------- | -------------------- | ----------------------- |
@@ -232,6 +251,19 @@ setTerrainEnable(isTerrainEnable: boolean) => Promise<void>
 | **`isTerrainEnable`** | <code>boolean</code> | true为打开，默认false |
 
 **Since:** 0.0.5
+
+--------------------
+
+
+### openOfflineMapActivity()
+
+```typescript
+openOfflineMapActivity() => Promise<void>
+```
+
+启动离线地图组件。
+
+**Since:** 0.0.7
 
 --------------------
 
@@ -316,6 +348,32 @@ destroy() => Promise<void>
 销毁地图实例。
 
 **Since:** 0.0.1
+
+--------------------
+
+
+### show()
+
+```typescript
+show() => Promise<void>
+```
+
+显示地图。
+
+**Since:** 0.0.7
+
+--------------------
+
+
+### hide()
+
+```typescript
+hide() => Promise<void>
+```
+
+隐藏地图。
+
+**Since:** 0.0.7
 
 --------------------
 

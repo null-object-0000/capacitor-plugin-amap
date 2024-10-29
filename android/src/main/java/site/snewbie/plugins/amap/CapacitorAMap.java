@@ -32,7 +32,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@RequiresApi(api = Build.VERSION_CODES.R)
 public class CapacitorAMap {
     private final String id;
     private final AMapConfig config;
@@ -41,8 +40,11 @@ public class CapacitorAMap {
     private final MapView mapView;
     @Setter
     private boolean touchEnabled;
+    @Setter
+    private boolean hidden;
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
+    private RectF lastBounds = new RectF();
+
     public CapacitorAMap(String id, AMapConfig config, CapacitorAMapPlugin delegate, PluginCall call) {
         this.id = id;
         this.config = config;
@@ -70,10 +72,10 @@ public class CapacitorAMap {
         UiSettings uiSettings = map.getUiSettings();
         uiSettings.setAllGesturesEnabled(true);
 
-        this.render(call, config);
+        this.render(call);
     }
 
-    private void render(PluginCall call, AMapConfig config) {
+    private void render(PluginCall call) {
         this.delegate.getActivity().runOnUiThread(() -> {
             try {
                 Bridge bridge = this.delegate.getBridge();
@@ -82,14 +84,15 @@ public class CapacitorAMap {
                 mapViewParent.setMinimumWidth(bridge.getWebView().getWidth());
 
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                        this.getScaledPixels(bridge, config.getWidth()),
-                        this.getScaledPixels(bridge, config.getHeight())
+                        this.getScaledPixels(bridge, this.config.getWidth()),
+                        this.getScaledPixels(bridge, this.config.getHeight())
                 );
-                layoutParams.leftMargin = this.getScaledPixels(bridge, config.getX());
-                layoutParams.topMargin = this.getScaledPixels(bridge, config.getY());
+                layoutParams.leftMargin = this.getScaledPixels(bridge, this.config.getX());
+                layoutParams.topMargin = this.getScaledPixels(bridge, this.config.getY());
 
                 mapViewParent.setTag(this.id);
 
+                this.lastBounds = new RectF(this.config.getX(), this.config.getY(), this.config.getX() + this.config.getWidth(), this.config.getY() + this.config.getHeight());
                 this.mapView.setLayoutParams(layoutParams);
                 mapViewParent.addView(this.mapView);
 
@@ -108,6 +111,11 @@ public class CapacitorAMap {
     }
 
     public void updateRender(RectF updatedBounds) {
+        // 如果 x, y, width, height 任意一个大于 0，就更新 lastBounds
+        if (updatedBounds.left > 0 || updatedBounds.top > 0 || updatedBounds.width() > 0 || updatedBounds.height() > 0) {
+            this.lastBounds = updatedBounds;
+        }
+
         this.config.setX((int) updatedBounds.left);
         this.config.setY((int) updatedBounds.top);
         this.config.setWidth((int) updatedBounds.width());

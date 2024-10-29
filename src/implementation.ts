@@ -126,11 +126,14 @@ export interface AMapPlugin extends Plugin {
     updatePrivacyShow(args: { isContains: boolean; isShow: boolean; }): Promise<void>;
     updatePrivacyAgree(args: { isAgree: boolean; }): Promise<void>;
     setTerrainEnable(args: { isTerrainEnable: boolean; }): Promise<void>;
+    openOfflineMapActivity(): Promise<void>;
     create(options: CreateMapArgs): Promise<void>;
     showIndoorMap(args: { id: string; enable: boolean; }): Promise<void>;
     setMapType(args: { id: string; type: MapType; }): Promise<void>;
     setTrafficEnabled(args: { id: string; enable: boolean; }): Promise<void>;
     destroy(args: { id: string }): Promise<void>;
+    show(args: { id: string; }): Promise<void>;
+    hide(args: { id: string; }): Promise<void>;
     enableTouch(args: { id: string }): Promise<void>;
     disableTouch(args: { id: string }): Promise<void>;
     onScroll(args: MapBoundsArgs): Promise<void>;

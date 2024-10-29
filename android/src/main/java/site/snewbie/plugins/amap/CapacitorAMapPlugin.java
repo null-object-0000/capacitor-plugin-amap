@@ -4,7 +4,10 @@ import static com.amap.api.maps.AMap.MAP_TYPE_NAVI_NIGHT;
 import static com.amap.api.maps.AMap.MAP_TYPE_NORMAL;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -19,7 +22,11 @@ import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.offlinemap.OfflineMapActivity;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -37,6 +44,8 @@ import java.util.Map;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import site.snewbie.plugins.amap.extend.OfflineMapActivity;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 @CapacitorPlugin(name = "CapacitorAMap", permissions = {
@@ -50,10 +59,13 @@ public class CapacitorAMapPlugin extends Plugin {
     private final Map<String, MutableList<MotionEvent>> cachedTouchEvents = new HashMap<>();
 
     @Override
-    @SuppressLint("ClickableViewAccessibility")
     public void load() {
         super.load();
+        this.setOnTouchListener();
+    }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void setOnTouchListener() {
         // 禁用 WebView 的点击事件拦截
         super.bridge.getWebView().setOnTouchListener((v, event) -> {
             // 不知道为啥这样写，参考的 capacitor-plugins-google-maps
@@ -103,6 +115,7 @@ public class CapacitorAMapPlugin extends Plugin {
     @Override
     protected void handleOnDestroy() {
         super.handleOnDestroy();
+
         maps.values().removeIf(map -> {
             map.getMapView().onDestroy();
             return true;
@@ -112,13 +125,46 @@ public class CapacitorAMapPlugin extends Plugin {
     @Override
     protected void handleOnResume() {
         super.handleOnResume();
+        maps.values().stream().filter(CapacitorAMap::isHidden).forEach(map -> map.updateRender(new RectF(0, 0, 0, 0)));
         maps.values().forEach(map -> map.getMapView().onResume());
     }
 
     @Override
     protected void handleOnPause() {
         super.handleOnPause();
+        maps.values().stream().filter(CapacitorAMap::isHidden).forEach(map -> map.updateRender(map.getLastBounds()));
         maps.values().forEach(map -> map.getMapView().onPause());
+    }
+
+    @PluginMethod
+    public void getFromLocation(PluginCall call) {
+        try {
+            Location location = Location.fromJSObject(call, "location");
+
+            GeocodeSearch geocodeSearch = new GeocodeSearch(super.getContext());
+            geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+                @Override
+                public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int rCode) {
+                    JSObject result = new JSObject();
+                    result.put("code", rCode);
+                    result.put("address", regeocodeResult.getRegeocodeAddress());
+                    call.resolve(result);
+                }
+
+                @Override
+                public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
+                }
+            });
+
+            LatLonPoint latLonPoint = new LatLonPoint(location.getLatitude(), location.getLongitude());
+            float radius = call.getFloat("radius", 1000F);
+            RegeocodeQuery regeocodeQuery = new RegeocodeQuery(latLonPoint, radius, GeocodeSearch.AMAP);
+
+            geocodeSearch.getFromLocationAsyn(regeocodeQuery);
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
     }
 
     @PluginMethod
@@ -162,10 +208,31 @@ public class CapacitorAMapPlugin extends Plugin {
     }
 
     @PluginMethod
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public void openOfflineMapActivity(PluginCall call) {
+        try {
+            IntentFilter filter = new IntentFilter(OfflineMapActivity.ON_CREATED_ACTION);
+            this.bridge.getActivity().registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (OfflineMapActivity.ON_CREATED_ACTION.equals(intent.getAction())) {
+                        call.resolve();
+                    }
+                }
+            }, filter, Context.RECEIVER_NOT_EXPORTED);
+
+            Intent intent = new Intent(this.bridge.getActivity(), OfflineMapActivity.class);
+            this.bridge.getActivity().startActivity(intent);
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
     public void create(PluginCall call) {
         try {
             String id = call.getString("id");
-            if (null == id || id.isEmpty()) {
+            if (StrUtil.isBlank(id)) {
                 throw new IllegalArgumentException("id is required");
             }
 
@@ -190,6 +257,7 @@ public class CapacitorAMapPlugin extends Plugin {
 
             CapacitorAMap map = new CapacitorAMap(id, new AMapConfig(config), this, call);
             maps.put(id, map);
+            call.resolve();
         } catch (Exception e) {
             call.reject(e.getMessage(), e);
         }
@@ -243,7 +311,7 @@ public class CapacitorAMapPlugin extends Plugin {
     public void destroy(PluginCall call) {
         try {
             String id = call.getString("id");
-            if (null == id || id.isEmpty()) {
+            if (StrUtil.isBlank(id)) {
                 throw new IllegalArgumentException("id is required");
             }
 
@@ -260,7 +328,33 @@ public class CapacitorAMapPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void show(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            map.setHidden(false);
+            map.updateRender(new RectF(map.getLastBounds()));
+            map.getMapView().refreshDrawableState();
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
+    public void hide(PluginCall call) {
+        try {
+            CapacitorAMap map = this.getMap(call);
+            map.setHidden(true);
+            map.updateRender(new RectF(0, 0, 0, 0));
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
     public void enableTouch(PluginCall call) {
+        this.setOnTouchListener();
         this.setTouchEnabled(call, true);
     }
 
@@ -329,16 +423,7 @@ public class CapacitorAMapPlugin extends Plugin {
 
     private void setTouchEnabled(PluginCall call, boolean enabled) {
         try {
-            String id = call.getString("id");
-            if (null == id || id.isEmpty()) {
-                throw new IllegalArgumentException("id is required");
-            }
-
-            CapacitorAMap map = maps.get(id);
-            if (map == null) {
-                throw new IllegalArgumentException("map not found");
-            }
-
+            CapacitorAMap map = this.getMap(call);
             map.setTouchEnabled(enabled);
             call.resolve();
         } catch (Exception e) {
@@ -369,11 +454,6 @@ public class CapacitorAMapPlugin extends Plugin {
         Double y = jsonObject.getDouble("y");
 
         return new RectF(x.floatValue(), y.floatValue(), (float) (x + width), (float) (y + height));
-    }
-
-    @PluginMethod
-    public void openOfflineMapActivity() {
-        this.bridge.getActivity().startActivity(new Intent(this.bridge.getActivity(), OfflineMapActivity.class));
     }
 
     @PluginMethod
@@ -540,7 +620,7 @@ public class CapacitorAMapPlugin extends Plugin {
     @NonNull
     private CapacitorAMap getMap(PluginCall call) {
         String id = call.getString("id");
-        if (null == id || id.isEmpty()) {
+        if (StrUtil.isBlank(id)) {
             throw new IllegalArgumentException("id is required");
         }
 

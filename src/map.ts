@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import { CameraPosition, MapListenerCallback, MapReadyCallbackData, MapStatusLimits, MapType, UiSettings } from './definitions';
+import { CameraPosition, GetFromLocationArgs, MapListenerCallback, MapReadyCallbackData, MapStatusLimits, MapType, UiSettings } from './definitions';
 import type { CreateMapArgs, MyLocationStyle } from './implementation';
 import { CapacitorAMap } from './implementation';
 
@@ -11,7 +11,17 @@ import { CapacitorAMap } from './implementation';
  */
 export interface AMapInterface {
     /**
-     * 更新隐私合规状态，需要在初始化地图之前完成
+     * 逆地理编码（坐标转地址）
+     * @function AMap.getFromLocation
+     * @since 0.0.8
+     */
+    getFromLocation(args: GetFromLocationArgs): Promise<{
+        code: number;
+        address: any;
+    }>;
+
+    /**
+     * 更新隐私合规状态，需要在初始化地图之前完成。
      * @function AMap.updatePrivacyShow
      * @param isContains 隐私权政策是否包含高德开平隐私权政策  true是包含 
      * @param isShow 隐私权政策是否弹窗展示告知用户 true是展示 
@@ -19,7 +29,7 @@ export interface AMapInterface {
      */
     updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void>;
     /**
-     * 更新同意隐私状态，需要在初始化地图之前完成
+     * 更新同意隐私状态，需要在初始化地图之前完成。
      * @function AMap.updatePrivacyAgree
      * @param isAgree 隐私权政策是否取得用户同意  true是用户同意
      * @since 0.0.2
@@ -33,13 +43,18 @@ export interface AMapInterface {
      * @since 0.0.5
      */
     setTerrainEnable(isTerrainEnable: boolean): Promise<void>;
+    /**
+     * 启动离线地图组件。
+     * @function AMap.openOfflineMapActivity
+     * @since 0.0.7
+     */
+    openOfflineMapActivity(): Promise<void>;
 
     /**
      * 创建地图实例。
      * @function AMap.create
      * @param {CreateMapArgs} options - 创建地图的参数。
      * @param callback
-     * @returns AMap
      * @since 0.0.1
      */
     create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap>;
@@ -67,6 +82,16 @@ export interface AMapInterface {
      * @since 0.0.1
      */
     destroy(): Promise<void>;
+    /**
+     * 显示地图。
+     * @since 0.0.7
+     */
+    show(): Promise<void>;
+    /**
+     * 隐藏地图。
+     * @since 0.0.7
+     */
+    hide(): Promise<void>;
     /**
      * 设置地图允许被触控。
      * @since 0.0.1
@@ -100,20 +125,19 @@ export interface AMapInterface {
      */
     setUiSettings(args: UiSettings): Promise<void>;
 
+
     /**
      * 给地图设置一个新的状态。
      * @param args 新的地图状态。
      * @since 0.0.6
      */
     cameraUpdatePosition(args: CameraPosition): Promise<void>;
-
     /**
      * 设置地图缩放级别。
      * @param zoom 地图缩放级别。地图的缩放级别一共分为 17 级，从 3 到 19。数字越大，展示的图面信息越精细。
      * @since 0.0.6
      */
     cameraZoomTo(zoom: Number): Promise<void>;
-
     /**
      * 设置地图显示范围，无论如何操作地图，显示区域都不能超过该矩形区域。
      * @since 0.0.6
@@ -235,6 +259,10 @@ export class AMap implements AMapInterface {
         });
     }
 
+    public static openOfflineMapActivity(): Promise<void> {
+        return CapacitorAMap.openOfflineMapActivity();
+    }
+
     public static async create(options: CreateMapArgs, callback?: MapListenerCallback<MapReadyCallbackData>): Promise<AMap> {
         const newMap = new AMap(options.id);
 
@@ -259,16 +287,7 @@ export class AMap implements AMapInterface {
         if (Capacitor.isNativePlatform()) {
             (options.element as any) = {};
 
-            const getMapBounds = () => {
-                const mapRect =
-                    newMap.element?.getBoundingClientRect() ?? ({} as DOMRect);
-                return {
-                    x: mapRect.x,
-                    y: mapRect.y,
-                    width: mapRect.width,
-                    height: mapRect.height,
-                };
-            };
+            const getMapBounds = () => newMap.element?.getBoundingClientRect() ?? ({} as DOMRect);
 
             const onDisplay = () => {
                 CapacitorAMap.onDisplay({
@@ -413,6 +432,13 @@ export class AMap implements AMapInterface {
     }
 
     /**
+     * @deprecated Use AMap.openOfflineMapActivity instead.
+     */
+    public openOfflineMapActivity(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
      * @deprecated Use AMap.create instead.
      */
     public create(_options: CreateMapArgs, _callback?: MapListenerCallback<MapReadyCallbackData> | undefined): Promise<AMap> {
@@ -433,6 +459,14 @@ export class AMap implements AMapInterface {
         return CapacitorAMap.destroy({
             id: this.id,
         });
+    }
+
+    public show(): Promise<void> {
+        return CapacitorAMap.show({ id: this.id });
+    }
+
+    public hide(): Promise<void> {
+        return CapacitorAMap.hide({ id: this.id });
     }
 
     public enableTouch(): Promise<void> {
@@ -519,12 +553,7 @@ export class AMap implements AMapInterface {
 
             CapacitorAMap.onScroll({
                 id: this.id,
-                mapBounds: {
-                    x: mapRect.x,
-                    y: mapRect.y,
-                    width: mapRect.width,
-                    height: mapRect.height,
-                },
+                mapBounds: mapRect,
             });
         }
     }

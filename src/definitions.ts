@@ -214,3 +214,18 @@ export type MapListenerCallback<T> = (data: T) => void;
 export interface MapReadyCallbackData {
   mapId: string;
 }
+
+/**
+ * @since 0.0.8
+ */
+export interface GetFromLocationArgs {
+  /**
+   * 经纬度坐标，经纬度小数点后不要超过 6 位。
+   */
+  location: LatLng;
+  /**
+   * 搜索半径，取值范围：0~3000，单位：米。
+   * @default 1000
+   */
+  radius: number;
+}
