@@ -123,6 +123,14 @@ export interface SetMapStatusLimitsArgs extends MapStatusLimits {
 }
 
 export interface AMapPlugin extends Plugin {
+    getFromLocation(args: {
+        location: {
+            latitude: number; longitude: number;
+        }; radius: number;
+    }): Promise<{
+        code: number;
+        address: any;
+    }>;
     updatePrivacyShow(args: { isContains: boolean; isShow: boolean; }): Promise<void>;
     updatePrivacyAgree(args: { isAgree: boolean; }): Promise<void>;
     setTerrainEnable(args: { isTerrainEnable: boolean; }): Promise<void>;
