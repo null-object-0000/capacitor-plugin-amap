@@ -22,6 +22,11 @@ import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -132,6 +137,37 @@ public class CapacitorAMapPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void getFromLocation(PluginCall call) {
+        try {
+            Location location = Location.fromJSObject(call, "location");
+
+            GeocodeSearch geocodeSearch = new GeocodeSearch(super.getContext());
+            geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+                @Override
+                public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int rCode) {
+                    JSObject result = new JSObject();
+                    result.put("code", rCode);
+                    result.put("address", regeocodeResult.getRegeocodeAddress());
+                    call.resolve(result);
+                }
+
+                @Override
+                public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
+                }
+            });
+
+            LatLonPoint latLonPoint = new LatLonPoint(location.getLatitude(), location.getLongitude());
+            float radius = call.getFloat("radius", 1000F);
+            RegeocodeQuery regeocodeQuery = new RegeocodeQuery(latLonPoint, radius, GeocodeSearch.AMAP);
+
+            geocodeSearch.getFromLocationAsyn(regeocodeQuery);
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
+    }
+
+    @PluginMethod
     public void updatePrivacyShow(PluginCall call) {
         try {
             // isContains: 隐私权政策是否包含高德开平隐私权政策  true是包含
@@ -221,6 +257,7 @@ public class CapacitorAMapPlugin extends Plugin {
 
             CapacitorAMap map = new CapacitorAMap(id, new AMapConfig(config), this, call);
             maps.put(id, map);
+            call.resolve();
         } catch (Exception e) {
             call.reject(e.getMessage(), e);
         }

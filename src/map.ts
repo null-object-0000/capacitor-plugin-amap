@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
-import { CameraPosition, MapListenerCallback, MapReadyCallbackData, MapStatusLimits, MapType, UiSettings } from './definitions';
+import { CameraPosition, GetFromLocationArgs, MapListenerCallback, MapReadyCallbackData, MapStatusLimits, MapType, UiSettings } from './definitions';
 import type { CreateMapArgs, MyLocationStyle } from './implementation';
 import { CapacitorAMap } from './implementation';
 
@@ -10,6 +10,16 @@ import { CapacitorAMap } from './implementation';
  * @class AMap
  */
 export interface AMapInterface {
+    /**
+     * 逆地理编码（坐标转地址）
+     * @function AMap.getFromLocation
+     * @since 0.0.8
+     */
+    getFromLocation(args: GetFromLocationArgs): Promise<{
+        code: number;
+        address: any;
+    }>;
+
     /**
      * 更新隐私合规状态，需要在初始化地图之前完成。
      * @function AMap.updatePrivacyShow
@@ -454,7 +464,7 @@ export class AMap implements AMapInterface {
     public show(): Promise<void> {
         return CapacitorAMap.show({ id: this.id });
     }
-    
+
     public hide(): Promise<void> {
         return CapacitorAMap.hide({ id: this.id });
     }
