@@ -240,23 +240,20 @@ export class AMap implements AMapInterface {
         this.id = id;
     }
 
+    public static getFromLocation(args: GetFromLocationArgs): Promise<{ code: number; address: any; }> {
+        return CapacitorAMap.getFromLocation(args);
+    }
+
     public static updatePrivacyShow(isContains: boolean, isShow: boolean): Promise<void> {
-        return CapacitorAMap.updatePrivacyShow({
-            isContains,
-            isShow
-        });
+        return CapacitorAMap.updatePrivacyShow({ isContains, isShow });
     }
 
     public static updatePrivacyAgree(isAgree: boolean): Promise<void> {
-        return CapacitorAMap.updatePrivacyAgree({
-            isAgree
-        });
+        return CapacitorAMap.updatePrivacyAgree({ isAgree });
     }
 
     public static setTerrainEnable(isTerrainEnable: boolean): Promise<void> {
-        return CapacitorAMap.setTerrainEnable({
-            isTerrainEnable
-        });
+        return CapacitorAMap.setTerrainEnable({ isTerrainEnable });
     }
 
     public static openOfflineMapActivity(): Promise<void> {
@@ -408,6 +405,13 @@ export class AMap implements AMapInterface {
                 resolve(elementBounds);
             }
         });
+    }
+
+    /**
+     * @deprecated Use AMap.getFromLocation instead.
+     */
+    public getFromLocation(_args: GetFromLocationArgs): Promise<{ code: number; address: any; }> {
+        throw new Error('Method not implemented.');
     }
 
     /**
